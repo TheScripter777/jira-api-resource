@@ -10,6 +10,7 @@ import (
 	"github.com/TurnsCoffeeIntoScripts/jira-api-resource/pkg/helpers"
 	"github.com/TurnsCoffeeIntoScripts/jira-api-resource/pkg/http/rest"
 	"github.com/TurnsCoffeeIntoScripts/jira-api-resource/pkg/service"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 )
@@ -26,8 +27,14 @@ type ServiceEditCustomField struct {
 // See service/service.go for details
 func (s *ServiceEditCustomField) InitJiraAPI(params configuration.JiraAPIResourceParameters) (rest.JiraAPI, error) {
 	s.issueId = params.ActiveIssue
-	s.fieldValue = *params.CustomFieldValue
+	val, err := s.extractValue(params)
 	s.fieldType = *params.CustomFieldType
+
+	if err != nil {
+		return rest.JiraAPI{}, err
+	}
+
+	s.fieldValue = val
 
 	if s.issueId == "" || s.fieldValue == "" || s.fieldType == "" {
 		return rest.JiraAPI{}, errors.New("missing value(s) for ServiceEditCustomField")
@@ -80,4 +87,19 @@ func (s *ServiceEditCustomField) PostAPICall(result interface{}) error {
 
 func (s *ServiceEditCustomField) Name() string {
 	return "ServiceEditCustomField"
+}
+
+func (s *ServiceEditCustomField) extractValue(params configuration.JiraAPIResourceParameters) (string, error) {
+	if !helpers.IsStringPtrNilOrEmtpy(params.CustomFieldValue) {
+		return *params.CustomFieldValue, nil
+	} else if !helpers.IsStringPtrNilOrEmtpy(params.CustomFieldValueFromFile) {
+		b, err := ioutil.ReadFile(*params.CustomFieldValueFromFile)
+		if err != nil {
+			return "", errors.New("could not retrieve value from file for ServiceEditCustomField")
+		}
+
+		return string(b), nil
+	}
+
+	return "", errors.New("no value received in ServiceEditCustomField. A problem must have occured in the validation stage")
 }

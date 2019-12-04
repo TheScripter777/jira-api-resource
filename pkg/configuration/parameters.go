@@ -19,6 +19,8 @@ package configuration
 
 import (
 	"flag"
+	"fmt"
+	"github.com/TurnsCoffeeIntoScripts/jira-api-resource/pkg/helpers"
 	"github.com/TurnsCoffeeIntoScripts/jira-api-resource/pkg/log"
 	"strings"
 )
@@ -26,58 +28,62 @@ import (
 // Definition of constants that are use for the flags setup
 const (
 	// Parameters
-	jiraAPIURL       = "url"
-	username         = "username"
-	password         = "password"
-	context          = "context"
-	issueList        = "issues"
-	customFieldName  = "customFieldName"
-	customFieldType  = "customFieldType"
-	customFieldValue = "customFieldValue"
-	loggingLevel     = "loggingLevel"
+	jiraAPIURL               = "url"
+	username                 = "username"
+	password                 = "password"
+	context                  = "context"
+	issueList                = "issues"
+	customFieldName          = "customFieldName"
+	customFieldType          = "customFieldType"
+	customFieldValueAsIs     = "customFieldValue"
+	customFieldValueFromFile = "customFieldValueFromFile"
+	loggingLevel             = "loggingLevel"
 
 	// Flags
 	secured       = "secured"
 	forceOnParent = "forceOnParent"
 
 	// Default values and descriptions for both paramaters and flags
-	jiraAPIURLDefault           = ""
-	jiraAPIURLDescription       = "The base URL of the Jira API"
-	usernameDefault             = ""
-	usernameDescription         = "The username used to connect to the Jira API"
-	passwordDefault             = ""
-	passwordDescription         = "The password needed to connect to the Jira API"
-	contextDefault              = ""
-	contextDescription          = "The context of execution. {'EditCustomField'}"
-	issueListDefault            = ""
-	issueListDescription        = "The issue or list of issues to execute the specified context to"
-	customFieldNameDefault      = ""
-	customFieldNameDescription  = "Certain operation (such as edits) might require the user to specify the name of the custome field so that the resource may find the appropriate custom field"
-	customFieldTypeDefault      = "string"
-	customFieldTypeDescription  = "The type that is required by the field via the Jira API"
-	customFieldValueDefault     = ""
-	customFieldValueDescription = "The value of the field that will be updated (in case of update workflow)"
-	loggingLevelDefault         = "INFO"
-	loggingLevelDescription     = "The level of the loggers of the application {'ALL', 'DEBUG', 'ERROR', 'INFO', 'WARN', 'OFF'}"
-	_                           = /*securedDefault*/ true
-	securedDescription          = "Flags that indicates if the API calls should be made in session"
-	_                           = /*forceOnParentDefault*/ false
-	forceOnParentDescription    = "Flags that indicates if we want to force all operation on the parent issue (if there's one)"
+	jiraAPIURLDefault                   = ""
+	jiraAPIURLDescription               = "The base URL of the Jira API"
+	usernameDefault                     = ""
+	usernameDescription                 = "The username used to connect to the Jira API"
+	passwordDefault                     = ""
+	passwordDescription                 = "The password needed to connect to the Jira API"
+	contextDefault                      = ""
+	contextDescription                  = "The context of execution. {'EditCustomField'}"
+	issueListDefault                    = ""
+	issueListDescription                = "The issue or list of issues to execute the specified context to"
+	customFieldNameDefault              = ""
+	customFieldNameDescription          = "Certain operation (such as edits) might require the user to specify the name of the custome field so that the resource may find the appropriate custom field"
+	customFieldTypeDefault              = "string"
+	customFieldTypeDescription          = "The type that is required by the field via the Jira API"
+	customFieldValueAsIsDefault         = ""
+	customFieldValueAsIsDescription     = "The value of the field that will be updated (in case of update workflow)"
+	customFieldValueFromFileDefault     = ""
+	customFieldValueFromFileDescription = "The value of the field, stored in a file, that will be updated (in case of update workflow)"
+	loggingLevelDefault                 = "INFO"
+	loggingLevelDescription             = "The level of the loggers of the application {'ALL', 'DEBUG', 'ERROR', 'INFO', 'WARN', 'OFF'}"
+	_                                   = /*securedDefault*/ true
+	securedDescription                  = "Flags that indicates if the API calls should be made in session"
+	_                                   = /*forceOnParentDefault*/ false
+	forceOnParentDescription            = "Flags that indicates if we want to force all operation on the parent issue (if there's one)"
 )
 
 // JiraAPIResourceParameters is a struct that holds every possible parameters/flags known by the application.
 // They are all parsed via the flag.Parse() method of the Go flags api. The struct also contains the meta-parameters
 // (see meta-parametes.go).
 type JiraAPIResourceParameters struct {
-	JiraAPIUrl       *string
-	Username         *string
-	Password         *string
-	Context          Context
-	IssueList        []string
-	CustomFieldName  *string
-	CustomFieldType  *string
-	CustomFieldValue *string
-	LoggingLevel     *string
+	JiraAPIUrl               *string
+	Username                 *string
+	Password                 *string
+	Context                  Context
+	IssueList                []string
+	CustomFieldName          *string
+	CustomFieldType          *string
+	CustomFieldValue         *string
+	CustomFieldValueFromFile *string
+	LoggingLevel             *string
 
 	ActiveIssue string         // The **SINGLE** issue that the resource is currently processing
 	Meta        MetaParameters //
@@ -106,7 +112,8 @@ func (param *JiraAPIResourceParameters) Parse() {
 	issueListString = flag.String(issueList, issueListDefault, issueListDescription)
 	param.CustomFieldName = flag.String(customFieldName, customFieldNameDefault, customFieldNameDescription)
 	param.CustomFieldType = flag.String(customFieldType, customFieldTypeDefault, customFieldTypeDescription)
-	param.CustomFieldValue = flag.String(customFieldValue, customFieldValueDefault, customFieldValueDescription)
+	param.CustomFieldValue = flag.String(customFieldValueAsIs, customFieldValueAsIsDefault, customFieldValueAsIsDescription)
+	param.CustomFieldValueFromFile = flag.String(customFieldValueFromFile, customFieldValueFromFileDefault, customFieldValueFromFileDescription)
 	param.LoggingLevel = flag.String(loggingLevel, loggingLevelDefault, loggingLevelDescription)
 
 	// Parsing flags
@@ -140,6 +147,26 @@ func (param *JiraAPIResourceParameters) validate() {
 	} else if param.Context == Unknown {
 		// The specified context wasn't recognized, therefore it isn't valid
 		param.Meta.valid = false
+	}
+
+	if param.Meta.mandatoryPresent && param.Meta.valid {
+		// Next the initialized context needs to be validated against the input parameters
+		// At this point we know we have a valid:
+		//	- Context
+		//	- Set of stand-alone input parameters
+		switch param.Context {
+		case EditCustomField:
+			if helpers.IsStringPtrNilOrEmtpy(param.CustomFieldValue) && helpers.IsStringPtrNilOrEmtpy(param.CustomFieldValueFromFile) {
+				// In the context of editing a custom field, there's an absolute need to have the value passed as input
+				// Here we detected that nothing was passed. The meta-parameter 'valid' must then be set to false
+				param.Meta.valid = false
+				param.Meta.Msg = fmt.Sprintf("Missing 'custom field' parameter (%s or %s)", customFieldValueAsIs, customFieldValueFromFile)
+			}
+		case ReadIssue:
+			fallthrough
+		default:
+			param.Meta.valid = true
+		}
 	}
 }
 

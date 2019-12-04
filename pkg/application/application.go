@@ -34,8 +34,6 @@ func Run() error {
 		return err
 	}
 
-	//return app.executeFromContext()
-
 	return app.pipeline.Execute()
 }
 
@@ -52,6 +50,10 @@ func (app *JiraAPIResourceApp) initFlagsAndParameters() error {
 
 func (app *JiraAPIResourceApp) configurationReady() error {
 	if !app.params.Meta.Ready() {
+		if app.params.Meta.Msg != "" {
+			return errors.New(app.params.Meta.Msg)
+		}
+
 		return errors.New("flags and parameters did not form a valid set")
 	}
 

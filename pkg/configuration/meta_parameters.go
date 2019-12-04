@@ -8,7 +8,8 @@ type MetaParameters struct {
 	mandatoryPresent bool // Indicates whether the mandatory parameters are persent or not
 	valid            bool // Indicates if the values received for each flags are valid or not
 
-	MultipleIssue bool // Indicates whether the resource received multiple Jira issue to process
+	Msg           string // TODO
+	MultipleIssue bool   // Indicates whether the resource received multiple Jira issue to process
 }
 
 // Returns true if the flags were parsed by the Go flags api (meta.parsed) and if all the mandatory parameters
