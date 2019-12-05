@@ -64,7 +64,6 @@ jiraApiResource \
     --issues=$issues \
     --customFieldName=$customFieldName \
     --customFieldType=$customFieldType \
-    #--customFieldValue=$customFieldValue \
-    $values
+    $values \
     --loggingLevel=$loggingLevel \
     $flags
