@@ -52,11 +52,11 @@ func GetValueFromParam(param string) int {
 func GetIOHandle(level int) io.Writer {
 	switch level {
 	case DEBUG:
-		return os.Stdout
+		return os.Stderr
 	case INFO:
-		return os.Stdout
+		return os.Stderr
 	case WARNING:
-		return os.Stdout
+		return os.Stderr
 	case ERROR:
 		return os.Stderr
 	default:
