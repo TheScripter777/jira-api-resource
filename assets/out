@@ -36,11 +36,15 @@ customFieldValueFromFile=$(jq -r '.params.custom_field_value_from_file // ""' < 
 issues=$(<$1/${issuesFileDirectory}/*.txt)
 
 values=""
+echo $customFieldValue >> cfv.txt
+echo $customFieldValueFromFile >> cfvff.txt
 if [[ ! -z $customFieldValue ]]; then
     values="--customFieldValue=$customFieldValue"
 elif [[ ! -z $customFieldValueFromFile ]]; then
     values="--customFieldValueFromFile=$customFieldValueFromFile"
 fi
+
+echo $values >> val.txt
 
 #customFieldValue=$(<$1/customFieldValueFromFile)
 
