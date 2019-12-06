@@ -168,6 +168,8 @@ func (param *JiraAPIResourceParameters) validate() {
 			param.Meta.valid = true
 		}
 	}
+
+	param.log()
 }
 
 func (param *JiraAPIResourceParameters) initializeContext(contextString *string) {
@@ -190,4 +192,27 @@ func (param *JiraAPIResourceParameters) initializeIssueList(issueListString *str
 func (param *JiraAPIResourceParameters) initLogger() {
 	log.Logger = log.ResourceLogger{}
 	log.Logger.InitLoggerFromParam(*param.LoggingLevel)
+}
+
+func (param *JiraAPIResourceParameters) log() {
+	if log.Logger.Level == log.DEBUG {
+		log.Logger.Debug("** PARAMETERS ******************************")
+		log.Logger.Debugf("JiraAPIUrl: %s", *param.JiraAPIUrl)
+		log.Logger.Debugf("Username: %s", *param.Username)
+		log.Logger.Debug("Password: ****")
+		log.Logger.Debugf("Context: %s", param.Context.String())
+		log.Logger.Debugf("IssueList: %v", param.IssueList)
+		log.Logger.Debugf("CustomFieldName: %s", *param.CustomFieldName)
+		log.Logger.Debugf("CustomFieldType: %s", *param.CustomFieldType)
+		log.Logger.Debugf("CustomFiledValue: %s", *param.CustomFieldValue)
+		log.Logger.Debugf("CustomFieldValueFromFile: %s", *param.CustomFieldValueFromFile)
+
+		log.Logger.Debug("** FLAGS ***********************************")
+		log.Logger.Debugf("ForceOnParent: %v", param.Flags.ForceOnParent)
+		log.Logger.Debugf("Secured: %v", param.Flags.Secured)
+
+		log.Logger.Debug("** META ************************************")
+		log.Logger.Debugf("valid: %v", param.Meta.valid)
+		log.Logger.Debugf("mandatoryPresent: %v", param.Meta.mandatoryPresent)
+	}
 }
