@@ -125,11 +125,11 @@ func (api *JiraAPI) processResponse(resp *http.Response) (bool, error) {
 		return false, errors.New("nil response was returned")
 	}
 
-	if ok, err := Is4xx(resp.StatusCode); ok {
+	if ok, err := Is4xx(resp); ok {
 		return false, err
 	}
 
-	if ok, err := Is5xx(resp.StatusCode); ok {
+	if ok, err := Is5xx(resp); ok {
 		return false, err
 	}
 
