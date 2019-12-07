@@ -45,27 +45,15 @@ if [[ ! -z $forceOnParent ]]; then
     fi
 fi
 
->&2 echo "--url=$url \
-    --username=$username \
-    --password=$password \
-    --context=$context \
-    --issues=$issues \
-    --customFieldName=$customFieldName \
-    --customFieldType=$customFieldType \
-    --customFieldValue=$customFieldValue \
-    --customFieldValueFromFile=$customFieldValueFromFile \
-    --loggingLevel=$loggingLevel \
-    $flags"
-
 jiraApiResource \
-    --url=$url \
-    --username=$username \
-    --password=$password \
-    --context=$context \
-    --issues=$issues \
-    --customFieldName=$customFieldName \
-    --customFieldType=$customFieldType \
-    --customFieldValue=1234 \
-    --customFieldValueFromFile=version-build/version \
-    --loggingLevel=$loggingLevel \
+    --url="$url" \
+    --username="$username" \
+    --password="$password" \
+    --context="$context" \
+    --issues="$issues" \
+    --customFieldName="$customFieldName" \
+    --customFieldType="$customFieldType" \
+    --customFieldValue="1234" \
+    --customFieldValueFromFile="version-build/version" \
+    --loggingLevel="$loggingLevel" \
     $flags
