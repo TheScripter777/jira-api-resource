@@ -14,3 +14,12 @@ func (i *Issue) AddField(key string, val interface{}) {
 
 	i.Fields[key] = val
 }
+
+func (i *Issue) HasParent() (bool, string) {
+	if val, ok := i.Fields["parent"]; ok {
+		convertedVal := val.(map[string]string)
+		return true, convertedVal["key"]
+	}
+
+	return false, ""
+}

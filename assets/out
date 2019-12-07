@@ -53,7 +53,7 @@ jiraApiResource \
     --issues="$issues" \
     --customFieldName="$customFieldName" \
     --customFieldType="$customFieldType" \
-    --customFieldValue="1234" \
-    --customFieldValueFromFile="version-build/version" \
+    --customFieldValue="$customFieldValue" \
+    --customFieldValueFromFile="$customFieldValueFromFile" \
     --loggingLevel="$loggingLevel" \
     $flags

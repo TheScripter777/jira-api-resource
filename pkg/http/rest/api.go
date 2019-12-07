@@ -66,6 +66,7 @@ func (api *JiraAPI) Call() (interface{}, error) {
 		req.Header.Set("Content-Type", "application/json")
 
 		if status.Secured {
+			log.Logger.Debug("Setting session cookie for api call")
 			req.Header.Set("cookie", fmt.Sprintf("%s=%s", status.SessionName, status.SessionValue))
 		}
 	}
