@@ -54,7 +54,7 @@ jiraApiResource \
     --customFieldName="$customFieldName" \
     --customFieldType="$customFieldType" \
     --customFieldValue="$customFieldValue" \
-    --customFieldValueFromFile="$" \
+    --customFieldValueFromFile="$customFieldValueFromFile" \
     --loggingLevel="$loggingLevel" \
     $flags
 
