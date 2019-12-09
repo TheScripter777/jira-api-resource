@@ -95,7 +95,7 @@ func (s *ServiceEditCustomField) extractValue(params configuration.JiraAPIResour
 	} else if !helpers.IsStringPtrNilOrEmtpy(params.CustomFieldValueFromFile) {
 		b, err := ioutil.ReadFile(*params.CustomFieldValueFromFile)
 		if err != nil {
-			return "", errors.New("could not retrieve value from file for ServiceEditCustomField")
+			return "", err
 		}
 
 		return string(b), nil
