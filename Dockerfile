@@ -42,6 +42,6 @@ COPY assets/out /opt/resource/out
 
 RUN chmod +x /opt/resource/check /opt/resource/in /opt/resource/out
 
-WORKDIR /tmp/build
+WORKDIR /opt/resource
 
 FROM resource

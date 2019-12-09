@@ -43,7 +43,7 @@ if [[ ! -z $forceOnParent ]]; then
     fi
 fi
 
-pushd put
+pushd /tmp/build/put
 
 jiraApiResource \
     --url="$url" \
