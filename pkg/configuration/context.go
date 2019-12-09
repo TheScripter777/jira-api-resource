@@ -30,6 +30,10 @@ func (c Context) String() string {
 // This function is the implementation of the 'valueOf' mechanic of an enum-like construct
 func GetContext(contextString string) Context {
 	for index, name := range names {
+		if contextString == "Unknown" {
+			return Context(len(names) - 1)
+		}
+
 		if name == contextString {
 			return Context(index)
 		}
