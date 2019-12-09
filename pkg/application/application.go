@@ -64,6 +64,6 @@ func (app *JiraAPIResourceApp) setupPipeline() error {
 	chaining.InitServiceRegistry()
 
 	app.pipeline = chaining.Pipeline{}
-	chain := chaining.GetServicesChain(app.params.Context, *app.params.Flags.Secured)
+	chain := chaining.GetServicesChain(app.params.Context)
 	return app.pipeline.BuildPipelineFromChain(chain, &app.params)
 }

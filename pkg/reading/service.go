@@ -51,6 +51,10 @@ func (s *ServiceReadIssue) PostAPICall(result interface{}) error {
 
 		if s.fieldName != "" {
 			s.fieldKey = helpers.FindCustomName(issue.Names.CustomFields, s.fieldName)
+
+			if s.fieldKey == "" {
+				return errors.New("failed to retrieve field key from specified custom field name")
+			}
 		}
 	}
 

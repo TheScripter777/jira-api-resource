@@ -65,10 +65,8 @@ func (api *JiraAPI) Call() (interface{}, error) {
 	if req != nil {
 		req.Header.Set("Content-Type", "application/json")
 
-		if status.Secured {
-			log.Logger.Debug("Setting session cookie for api call")
-			req.Header.Set("cookie", fmt.Sprintf("%s=%s", status.SessionName, status.SessionValue))
-		}
+		log.Logger.Debug("Setting htp basic auth for api call")
+		req.SetBasicAuth(status.Username, status.Password)
 	}
 
 	resp, errDo := client.Do(req)
@@ -105,19 +103,19 @@ func (api *JiraAPI) Call() (interface{}, error) {
 
 // Deprecated: This was used early on in the development to ease the connection
 // process. Now the resource uses session cookies.
-func (api *JiraAPI) createUrlWithCredentials(url, username, password string) {
+func (api *JiraAPI) createUrlWithCredentials(username, password string) {
 	// Construct the user:password@ string
 	usrpw := username + ":" + password + "@"
 
 	// Find the index to which we'll insert said string in url
-	usrpwInsertIndex := strings.Index(url, "://") + 3
+	usrpwInsertIndex := strings.Index(api.url, "://") + 3
 
 	// Remove any trailing '/' from the url because if needed they'll be added later on
 	// by the specific service executing the api call
-	strings.TrimSuffix(url, "/")
+	strings.TrimSuffix(api.url, "/")
 
 	// Build the final url value
-	api.url = url[:usrpwInsertIndex] + usrpw + url[usrpwInsertIndex:]
+	api.url = api.url[:usrpwInsertIndex] + usrpw + api.url[usrpwInsertIndex:]
 }
 
 func (api *JiraAPI) processResponse(resp *http.Response) (bool, error) {

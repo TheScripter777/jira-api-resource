@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"github.com/TurnsCoffeeIntoScripts/jira-api-resource/pkg/helpers"
 	"github.com/TurnsCoffeeIntoScripts/jira-api-resource/pkg/log"
+	"github.com/TurnsCoffeeIntoScripts/jira-api-resource/pkg/status"
 	"strings"
 )
 
@@ -94,7 +95,6 @@ type JiraAPIResourceParameters struct {
 // That being said the values in this struct are still parsed via the Go flags api. They've been put 'aside' for clariry
 // purposes.
 type JiraAPIResourceFlags struct {
-	Secured       *bool
 	ForceOnParent *bool
 }
 
@@ -117,7 +117,6 @@ func (param *JiraAPIResourceParameters) Parse() {
 	param.LoggingLevel = flag.String(loggingLevel, loggingLevelDefault, loggingLevelDescription)
 
 	// Parsing flags
-	param.Flags.Secured = flag.Bool(secured, true, securedDescription)
 	param.Flags.ForceOnParent = flag.Bool(forceOnParent, false, forceOnParentDescription)
 
 	if !param.Meta.parsed {
@@ -148,6 +147,9 @@ func (param *JiraAPIResourceParameters) validate() {
 		// The specified context wasn't recognized, therefore it isn't valid
 		param.Meta.valid = false
 	}
+
+	status.Username = *param.Username
+	status.Password = *param.Password
 
 	if param.Meta.mandatoryPresent && param.Meta.valid {
 		// Next the initialized context needs to be validated against the input parameters
