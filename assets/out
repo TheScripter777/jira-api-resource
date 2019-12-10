@@ -67,6 +67,8 @@ else
     outRef="N/A"
 fi
 
-echo "{\"version\": { \"ref\": \"$outRef\" }}"
+echo "{\"version\": { \"ref\": \"$outRef\" }}" >&3
 
 popd
+
+exit 0
