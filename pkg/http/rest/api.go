@@ -67,6 +67,7 @@ func (api *JiraAPI) Call() (interface{}, error) {
 		req.SetBasicAuth(status.Username, status.Password)
 	}
 
+	log.Logger.Infof("Sending %s request", api.HttpMethod)
 	resp, errDo := client.Do(req)
 
 	if errDo != nil {

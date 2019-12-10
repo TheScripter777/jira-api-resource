@@ -41,7 +41,6 @@ const (
 	loggingLevel             = "loggingLevel"
 
 	// Flags
-	secured       = "secured"
 	forceOnParent = "forceOnParent"
 
 	// Default values and descriptions for both paramaters and flags
@@ -65,8 +64,6 @@ const (
 	customFieldValueFromFileDescription = "The value of the field, stored in a file, that will be updated (in case of update workflow)"
 	loggingLevelDefault                 = "INFO"
 	loggingLevelDescription             = "The level of the loggers of the application {'ALL', 'DEBUG', 'ERROR', 'INFO', 'WARN', 'OFF'}"
-	_                                   = /*securedDefault*/ true
-	securedDescription                  = "Flags that indicates if the API calls should be made in session"
 	_                                   = /*forceOnParentDefault*/ false
 	forceOnParentDescription            = "Flags that indicates if we want to force all operation on the parent issue (if there's one)"
 )
