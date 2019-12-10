@@ -10,7 +10,6 @@ import (
 	"github.com/TurnsCoffeeIntoScripts/jira-api-resource/pkg/log"
 	"github.com/TurnsCoffeeIntoScripts/jira-api-resource/pkg/status"
 	"net/http"
-	"strings"
 )
 
 type CreateBodyFN func() []byte
@@ -54,7 +53,6 @@ func (api *JiraAPI) Call() (interface{}, error) {
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
 
-	//client := http.DefaultClient
 	client := http.Client{Transport: tr}
 	req, newRequestErr := http.NewRequest(api.HttpMethod, api.url, bytes.NewBuffer(api.Body))
 
@@ -65,7 +63,7 @@ func (api *JiraAPI) Call() (interface{}, error) {
 	if req != nil {
 		req.Header.Set("Content-Type", "application/json")
 
-		log.Logger.Debug("Setting htp basic auth for api call")
+		log.Logger.Debug("Setting http basic auth for api call")
 		req.SetBasicAuth(status.Username, status.Password)
 	}
 
@@ -99,23 +97,6 @@ func (api *JiraAPI) Call() (interface{}, error) {
 	}
 
 	return api.JsonObject, err
-}
-
-// Deprecated: This was used early on in the development to ease the connection
-// process. Now the resource uses session cookies.
-func (api *JiraAPI) createUrlWithCredentials(username, password string) {
-	// Construct the user:password@ string
-	usrpw := username + ":" + password + "@"
-
-	// Find the index to which we'll insert said string in url
-	usrpwInsertIndex := strings.Index(api.url, "://") + 3
-
-	// Remove any trailing '/' from the url because if needed they'll be added later on
-	// by the specific service executing the api call
-	strings.TrimSuffix(api.url, "/")
-
-	// Build the final url value
-	api.url = api.url[:usrpwInsertIndex] + usrpw + api.url[usrpwInsertIndex:]
 }
 
 func (api *JiraAPI) processResponse(resp *http.Response) (bool, error) {

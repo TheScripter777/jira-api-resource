@@ -58,4 +58,15 @@ jiraApiResource \
     --loggingLevel="$loggingLevel" \
     $flags
 
+outRef=""
+if [[ ! -z $customFieldValue ]]; then
+    outRef=$customFieldValue
+elif [[ ! -z $customFieldValueFromFile ]]; then
+    outRef=$(<$1/${customFieldValueFromFile})
+else
+    outRef="N/A"
+fi
+
+echo "{\"version\": { \"ref\": \"$outRef\" }}"
+
 popd

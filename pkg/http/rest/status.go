@@ -37,8 +37,7 @@ func Is5xx(resp *http.Response) (bool, error) {
 
 func Is2xx(resp *http.Response) bool {
 	code := resp.StatusCode
-	return codeOK(code) &&
-		code >= http.StatusOK && code <= 299
+	return code >= http.StatusOK && code <= 299
 }
 
 func codeOK(code int) bool {
