@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/TurnsCoffeeIntoScripts/jira-api-resource/pkg/configuration"
+	"github.com/TurnsCoffeeIntoScripts/jira-api-resource/pkg/helpers"
 	"github.com/TurnsCoffeeIntoScripts/jira-api-resource/pkg/log"
 	"github.com/TurnsCoffeeIntoScripts/jira-api-resource/pkg/status"
 	"net/http"
@@ -15,6 +16,11 @@ import (
 type CreateBodyFN func() []byte
 type GetEndpointFN func(string) string
 type JsonObjectFN func() interface{}
+
+type JiraAPIInterface interface {
+	Call() (interface{}, error)
+	processResponse(resp *http.Response) (bool, error)
+}
 
 type JiraAPI struct {
 	HttpMethod string
@@ -41,6 +47,8 @@ func CreateAPIFromParams(params configuration.JiraAPIResourceParameters, fnBody 
 
 	if fnEndpoint == nil {
 		return api, errors.New("not allowed to have null endpoint creation function")
+	} else if helpers.IsStringPtrNilOrEmtpy(params.JiraAPIUrl) {
+		return api, errors.New("jira API URL was not specified in the parameters")
 	} else {
 		api.url = fnEndpoint(*params.JiraAPIUrl)
 	}

@@ -7,7 +7,8 @@ import (
 )
 
 func main() {
-	if err := application.Run(); err != nil {
+	app := &application.JiraAPIResourceApp{}
+	if err := app.Run(); err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "%v", err)
 		os.Exit(1)
 	}

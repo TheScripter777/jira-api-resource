@@ -4,10 +4,10 @@ package configuration
 import "testing"
 
 var (
-	emptyValue   = ""
-	fakeUrl      = "https://github.com/TurnsCoffeeIntoScripts/jira-api-resource"
-	fakeUsername = "dummy_username"
-	fakePassword = "dummy_password"
+	emptyValue           = ""
+	fakeUrl              = "https://github.com/TurnsCoffeeIntoScripts/jira-api-resource"
+	fakeUsername         = "dummy_username"
+	fakePassword         = "dummy_password"
 	fakeCustomFieldValue = "dummyValue"
 )
 
@@ -97,7 +97,7 @@ func TestContextUnknown(t *testing.T) {
 		Username:   &fakePassword,
 		Password:   &fakePassword,
 		IssueList:  make([]string, 1),
-		Context: Unknown,
+		Context:    Unknown,
 	}
 
 	param.validate()
@@ -110,7 +110,7 @@ func TestContextReadIssue(t *testing.T) {
 		Username:   &fakePassword,
 		Password:   &fakePassword,
 		IssueList:  make([]string, 1),
-		Context: ReadIssue,
+		Context:    ReadIssue,
 	}
 
 	param.validate()
@@ -119,11 +119,11 @@ func TestContextReadIssue(t *testing.T) {
 
 func TestContextEditCustomFieldSuccess1(t *testing.T) {
 	param := &JiraAPIResourceParameters{
-		JiraAPIUrl: &fakeUrl,
-		Username:   &fakePassword,
-		Password:   &fakePassword,
-		IssueList:  make([]string, 1),
-		Context: EditCustomField,
+		JiraAPIUrl:       &fakeUrl,
+		Username:         &fakePassword,
+		Password:         &fakePassword,
+		IssueList:        make([]string, 1),
+		Context:          EditCustomField,
 		CustomFieldValue: &fakeCustomFieldValue,
 	}
 
@@ -133,11 +133,11 @@ func TestContextEditCustomFieldSuccess1(t *testing.T) {
 
 func TestContextEditCustomFieldSuccess2(t *testing.T) {
 	param := &JiraAPIResourceParameters{
-		JiraAPIUrl: &fakeUrl,
-		Username:   &fakePassword,
-		Password:   &fakePassword,
-		IssueList:  make([]string, 1),
-		Context: EditCustomField,
+		JiraAPIUrl:               &fakeUrl,
+		Username:                 &fakePassword,
+		Password:                 &fakePassword,
+		IssueList:                make([]string, 1),
+		Context:                  EditCustomField,
 		CustomFieldValueFromFile: &fakeCustomFieldValue,
 	}
 
@@ -151,7 +151,7 @@ func TestContextEditCustomFieldFailMissingBothValues(t *testing.T) {
 		Username:   &fakePassword,
 		Password:   &fakePassword,
 		IssueList:  make([]string, 1),
-		Context: EditCustomField,
+		Context:    EditCustomField,
 	}
 
 	param.validate()
@@ -160,6 +160,45 @@ func TestContextEditCustomFieldFailMissingBothValues(t *testing.T) {
 	if param.Meta.Msg == "" {
 		t.Errorf("String value was incorrect, got empty string but expected a message")
 	}
+}
+
+func TestInitializeIssueListSingle1(t *testing.T) {
+	param := &JiraAPIResourceParameters{}
+
+	list := "ABC-001"
+	param.initializeIssueList(&list)
+
+	if param.IssueList == nil {
+		t.Errorf("IssueList was nil but should have contained at least one element")
+	}
+
+	testExpectedBoolResult(t, param.Meta.MultipleIssue, false)
+}
+
+func TestInitializeIssueListSingle2(t *testing.T) {
+	param := &JiraAPIResourceParameters{}
+
+	list := "ABC-001,"
+	param.initializeIssueList(&list)
+
+	if param.IssueList == nil {
+		t.Errorf("IssueList was nil but should have contained at least one element")
+	}
+
+	testExpectedBoolResult(t, param.Meta.MultipleIssue, false)
+}
+
+func TestInitializeIssueListMultiple(t *testing.T) {
+	param := &JiraAPIResourceParameters{}
+
+	list := "ABC-001,DEF-9999"
+	param.initializeIssueList(&list)
+
+	if param.IssueList == nil {
+		t.Errorf("IssueList was nil but should have contained at least one element")
+	}
+
+	testExpectedBoolResult(t, param.Meta.MultipleIssue, true)
 }
 
 func testExpectedBoolResult(t *testing.T, result, expected bool) {

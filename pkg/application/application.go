@@ -12,6 +12,14 @@ import (
 	"github.com/TurnsCoffeeIntoScripts/jira-api-resource/pkg/configuration"
 )
 
+type JiraAPIResourceInterace interface {
+	Run() error
+
+	initFlagsAndParameters() error
+	configurationReady() error
+	setupPipeline() error
+}
+
 // This struct represent a basic holder of the application parameters and context
 type JiraAPIResourceApp struct {
 	params   configuration.JiraAPIResourceParameters
@@ -20,8 +28,8 @@ type JiraAPIResourceApp struct {
 
 // Entry point of the application that is called from the main package.
 // The returned error, if any, is handled by the main
-func Run() error {
-	app := &JiraAPIResourceApp{}
+func (app *JiraAPIResourceApp) Run() error {
+
 	if err := app.initFlagsAndParameters(); err != nil {
 		return err
 	}

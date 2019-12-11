@@ -202,6 +202,8 @@ func (param *JiraAPIResourceParameters) initializeIssueList(issueListString *str
 	if *issueListString != "" {
 		param.IssueList = strings.Split(*issueListString, ",")
 
+		param.IssueList = helpers.CleanStringSlice(param.IssueList)
+
 		// More than 1 issue specified will set the 'Multiple' flag to true
 		param.Meta.MultipleIssue = len(param.IssueList) > 1
 	}
