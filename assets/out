@@ -26,7 +26,7 @@ context=$(jq -r '.source.context // ""' < ${payload})
 customFieldName=$(jq -r '.source.custom_field_name // ""' < ${payload})
 customFieldType=$(jq -r '.source.custom_field_type // ""' < ${payload})
 loggingLevel=$(jq -r '.source.logging_level // ""' < ${payload})
-forceOnParent=$(jq -r '.source.force_on_parent // ""' < ${payload})
+flags=$(jq -r '.source.flags // ""' < ${payload})
 
 # Reading params configuration
 issuesFileDirectory=$(jq -r '.params.file_location // ""' < ${payload})
@@ -35,39 +35,31 @@ customFieldValueFromFile=$(jq -r '.params.custom_field_value_from_file // ""' < 
 
 issues=$(<$1/${issuesFileDirectory}/*.txt)
 
-flags=""
-
-if [[ ! -z $forceOnParent ]]; then
-    if [[ "$forceOnParent" == 'y' ]] && [[ "$forceOnParent" == 'Y' ]]; then
-        flags="$flags --forceOnParent"
-    fi
-fi
-
 pushd /tmp/build/put
 
-jiraApiResource \
-    --url="$url" \
-    --username="$username" \
-    --password="$password" \
-    --context="$context" \
-    --issues="$issues" \
-    --customFieldName="$customFieldName" \
-    --customFieldType="$customFieldType" \
-    --customFieldValue="$customFieldValue" \
-    --customFieldValueFromFile="$customFieldValueFromFile" \
-    --loggingLevel="$loggingLevel" \
-    $flags
+    jiraApiResource \
+        --url="$url" \
+        --username="$username" \
+        --password="$password" \
+        --context="$context" \
+        --issues="$issues" \
+        --customFieldName="$customFieldName" \
+        --customFieldType="$customFieldType" \
+        --customFieldValue="$customFieldValue" \
+        --customFieldValueFromFile="$customFieldValueFromFile" \
+        --loggingLevel="$loggingLevel" \
+        $flags
 
-outRef=""
-if [[ ! -z $customFieldValue ]]; then
-    outRef=$customFieldValue
-elif [[ ! -z $customFieldValueFromFile ]]; then
-    outRef=$(<$1/${customFieldValueFromFile})
-else
-    outRef="N/A"
-fi
+    outRef=""
+    if [[ ! -z $customFieldValue ]]; then
+        outRef=$customFieldValue
+    elif [[ ! -z $customFieldValueFromFile ]]; then
+        outRef=$(<$1/${customFieldValueFromFile})
+    else
+        outRef="N/A"
+    fi
 
-echo "{\"version\": { \"ref\": \"$outRef\" }}" >&3
+    echo "{\"version\": { \"ref\": \"$outRef\" }}" >&3
 
 popd
 
