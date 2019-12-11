@@ -160,7 +160,6 @@ func (param *JiraAPIResourceParameters) validate() {
 				// In the context of editing a custom field, there's an absolute need to have the value passed as input
 				// Here we detected that nothing was passed. The meta-parameter 'valid' must then be set to false
 				param.Meta.valid = false
-
 				param.Meta.Msg = fmt.Sprintf("Missing 'custom field' parameter (%s or %s)",
 					customFieldValueAsIs,
 					customFieldValueFromFile)
