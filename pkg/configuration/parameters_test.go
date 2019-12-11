@@ -2,6 +2,8 @@
 package configuration
 
 import (
+	"fmt"
+	"os"
 	"testing"
 )
 
@@ -201,6 +203,29 @@ func TestInitializeIssueListMultiple(t *testing.T) {
 	}
 
 	testExpectedBoolResult(t, param.Meta.MultipleIssue, true)
+}
+
+func TestParseURL(t *testing.T) {
+	param := &JiraAPIResourceParameters{}
+
+	expected := "URL_PARAMETER"
+
+	os.Args = make([]string, 0)
+	os.Args = append(os.Args, "parameters_test")
+	os.Args = append(os.Args, fmt.Sprintf("--url=%s", expected))
+
+	param.Parse()
+
+	testExpectedStringResult(t, *param.JiraAPIUrl, expected)
+}
+
+func testExpectedStringResult(t *testing.T, result, expected string) {
+	// Normally this clause should be written like so: 'if result {'
+	// But in the context of this test it makes it easier to read if the '!= expected' is added because
+	// the clause can then explicity be read as 'if the result is not expected'
+	if result != expected {
+		t.Errorf("Boolean value was incorrect, got: %s, want: %s.", result, expected)
+	}
 }
 
 func testExpectedBoolResult(t *testing.T, result, expected bool) {
