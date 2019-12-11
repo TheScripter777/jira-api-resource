@@ -1,7 +1,10 @@
 // See parameters.go for this package's comment
 package configuration
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 var (
 	emptyValue           = ""
@@ -143,6 +146,23 @@ func TestContextEditCustomFieldSuccess2(t *testing.T) {
 
 	param.validate()
 	testExpectedBoolResult(t, param.Meta.valid, true)
+}
+
+func TestContextEditCustomFieldFailValueNil(t *testing.T) {
+	param := &JiraAPIResourceParameters{
+		JiraAPIUrl: &fakeUrl,
+		Username:   &fakePassword,
+		Password:   &fakePassword,
+		IssueList:  make([]string, 1),
+		Context:    EditCustomField,
+	}
+
+	param.validate()
+	testExpectedBoolResult(t, param.Meta.valid, false)
+
+	if ! strings.Contains(param.Meta.Msg, "nil") {
+		t.Errorf("String value was incorrect/incomplete, got: %s, want: any string message containing 'nil'", param.Meta.Msg)
+	}
 }
 
 func TestContextEditCustomFieldFailMissingBothValues(t *testing.T) {

@@ -140,9 +140,6 @@ func (param *JiraAPIResourceParameters) validate() {
 	} else if len(param.IssueList) == 0 {
 		// This is the case where the issue's list was passed but it was empty
 		param.Meta.valid = false
-	} else if param.Context == Unknown {
-		// The specified context wasn't recognized, therefore it isn't valid
-		param.Meta.valid = false
 	}
 
 	status.Username = *param.Username
@@ -155,6 +152,7 @@ func (param *JiraAPIResourceParameters) validate() {
 		//	- Set of stand-alone input parameters
 		switch param.Context {
 		case Unknown:
+			// The specified context wasn't recognized, therefore it isn't valid
 			param.Meta.valid = false
 			param.Meta.Msg = "Unknown context"
 		case EditCustomField:
