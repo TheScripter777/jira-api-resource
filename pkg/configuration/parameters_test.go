@@ -151,10 +151,11 @@ func TestContextEditCustomFieldFailMissingBothValues(t *testing.T) {
 		Username:   &fakePassword,
 		Password:   &fakePassword,
 		IssueList:  make([]string, 1),
+		Context: EditCustomField,
 	}
 
 	param.validate()
-	testExpectedBoolResult(t, param.Meta.valid, true)
+	testExpectedBoolResult(t, param.Meta.valid, false)
 
 	if param.Meta.Msg == "" {
 		t.Errorf("String value was incorrect, got empty string but expected a message")

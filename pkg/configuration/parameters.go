@@ -162,11 +162,25 @@ func (param *JiraAPIResourceParameters) validate() {
 				// In the context of editing a custom field, there's an absolute need to have the value passed as input
 				// Here we detected that nothing was passed. The meta-parameter 'valid' must then be set to false
 				param.Meta.valid = false
+				var val, valFromFile string
+
+				if param.CustomFieldValue == nil {
+					val = "nil"
+				} else {
+					val = *param.CustomFieldValue
+				}
+
+				if param.CustomFieldValueFromFile == nil {
+					valFromFile = "nil"
+				} else {
+					valFromFile = *param.CustomFieldValueFromFile
+				}
+
 				param.Meta.Msg = fmt.Sprintf("Missing 'custom field' parameter (%s or %s)[\"%s\" -- \"%s\"]",
 					customFieldValueAsIs,
 					customFieldValueFromFile,
-					*param.CustomFieldValue,
-					*param.CustomFieldValueFromFile)
+					val,
+					valFromFile)
 			}
 		case ReadIssue:
 			fallthrough
