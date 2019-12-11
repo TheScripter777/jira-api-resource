@@ -8,6 +8,7 @@ var (
 	fakeUrl      = "https://github.com/TurnsCoffeeIntoScripts/jira-api-resource"
 	fakeUsername = "dummy_username"
 	fakePassword = "dummy_password"
+	fakeCustomFieldValue = "dummyValue"
 )
 
 // Tests the JiraAPIResourceParameters.validate() method
@@ -22,7 +23,7 @@ func TestValidateSuccessFieldPresentAndValid(t *testing.T) {
 	}
 
 	param.validate()
-	testExpectedBoolResult(t, param, param.Meta.valid, true)
+	testExpectedBoolResult(t, param.Meta.valid, true)
 }
 
 func TestValidateFailMissingUrl(t *testing.T) {
@@ -34,8 +35,8 @@ func TestValidateFailMissingUrl(t *testing.T) {
 	}
 
 	param.validate()
-	testExpectedBoolResult(t, param, param.Meta.mandatoryPresent, false)
-	testExpectedBoolResult(t, param, param.Meta.valid, false)
+	testExpectedBoolResult(t, param.Meta.mandatoryPresent, false)
+	testExpectedBoolResult(t, param.Meta.valid, false)
 }
 
 func TestValidateFailMissingUsername(t *testing.T) {
@@ -47,8 +48,8 @@ func TestValidateFailMissingUsername(t *testing.T) {
 	}
 
 	param.validate()
-	testExpectedBoolResult(t, param, param.Meta.mandatoryPresent, false)
-	testExpectedBoolResult(t, param, param.Meta.valid, false)
+	testExpectedBoolResult(t, param.Meta.mandatoryPresent, false)
+	testExpectedBoolResult(t, param.Meta.valid, false)
 }
 
 func TestValidateFailMissingPassword(t *testing.T) {
@@ -60,8 +61,8 @@ func TestValidateFailMissingPassword(t *testing.T) {
 	}
 
 	param.validate()
-	testExpectedBoolResult(t, param, param.Meta.mandatoryPresent, false)
-	testExpectedBoolResult(t, param, param.Meta.valid, false)
+	testExpectedBoolResult(t, param.Meta.mandatoryPresent, false)
+	testExpectedBoolResult(t, param.Meta.valid, false)
 }
 
 func TestValidateFailMissingIssueList(t *testing.T) {
@@ -73,8 +74,8 @@ func TestValidateFailMissingIssueList(t *testing.T) {
 	}
 
 	param.validate()
-	testExpectedBoolResult(t, param, param.Meta.mandatoryPresent, false)
-	testExpectedBoolResult(t, param, param.Meta.valid, false)
+	testExpectedBoolResult(t, param.Meta.mandatoryPresent, false)
+	testExpectedBoolResult(t, param.Meta.valid, false)
 }
 
 func TestEmptyIssueList(t *testing.T) {
@@ -86,8 +87,8 @@ func TestEmptyIssueList(t *testing.T) {
 	}
 
 	param.validate()
-	testExpectedBoolResult(t, param, param.Meta.mandatoryPresent, true)
-	testExpectedBoolResult(t, param, param.Meta.valid, false)
+	testExpectedBoolResult(t, param.Meta.mandatoryPresent, true)
+	testExpectedBoolResult(t, param.Meta.valid, false)
 }
 
 func TestContextUnknown(t *testing.T) {
@@ -100,7 +101,7 @@ func TestContextUnknown(t *testing.T) {
 	}
 
 	param.validate()
-	testExpectedBoolResult(t, param, param.Meta.valid, false)
+	testExpectedBoolResult(t, param.Meta.valid, false)
 }
 
 func TestContextReadIssue(t *testing.T) {
@@ -113,11 +114,54 @@ func TestContextReadIssue(t *testing.T) {
 	}
 
 	param.validate()
-
-
+	testExpectedBoolResult(t, param.Meta.valid, true)
 }
 
-func testExpectedBoolResult(t *testing.T, param *JiraAPIResourceParameters, result, expected bool) {
+func TestContextEditCustomFieldSuccess1(t *testing.T) {
+	param := &JiraAPIResourceParameters{
+		JiraAPIUrl: &fakeUrl,
+		Username:   &fakePassword,
+		Password:   &fakePassword,
+		IssueList:  make([]string, 1),
+		Context: EditCustomField,
+		CustomFieldValue: &fakeCustomFieldValue,
+	}
+
+	param.validate()
+	testExpectedBoolResult(t, param.Meta.valid, true)
+}
+
+func TestContextEditCustomFieldSuccess2(t *testing.T) {
+	param := &JiraAPIResourceParameters{
+		JiraAPIUrl: &fakeUrl,
+		Username:   &fakePassword,
+		Password:   &fakePassword,
+		IssueList:  make([]string, 1),
+		Context: EditCustomField,
+		CustomFieldValueFromFile: &fakeCustomFieldValue,
+	}
+
+	param.validate()
+	testExpectedBoolResult(t, param.Meta.valid, true)
+}
+
+func TestContextEditCustomFieldFailMissingBothValues(t *testing.T) {
+	param := &JiraAPIResourceParameters{
+		JiraAPIUrl: &fakeUrl,
+		Username:   &fakePassword,
+		Password:   &fakePassword,
+		IssueList:  make([]string, 1),
+	}
+
+	param.validate()
+	testExpectedBoolResult(t, param.Meta.valid, true)
+
+	if param.Meta.Msg == "" {
+		t.Errorf("String value was incorrect, got empty string but expected a message")
+	}
+}
+
+func testExpectedBoolResult(t *testing.T, result, expected bool) {
 	// Normally this clause should be written like so: 'if result {'
 	// But in the context of this test it makes it easier to read if the '!= expected' is added because
 	// the clause can then explicity be read as 'if the result is not expected'
