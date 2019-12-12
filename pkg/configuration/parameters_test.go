@@ -2,8 +2,10 @@
 package configuration
 
 import (
+	"flag"
 	"fmt"
 	"os"
+	"reflect"
 	"testing"
 )
 
@@ -205,18 +207,76 @@ func TestInitializeIssueListMultiple(t *testing.T) {
 	testExpectedBoolResult(t, param.Meta.MultipleIssue, true)
 }
 
-func TestParseURL(t *testing.T) {
-	param := &JiraAPIResourceParameters{}
+func TestInitializeContext(t *testing.T) {
+	dummyString := "abc"
+	readIssueString := "ReadIssue"
+	editCustomFieldString := "EditCustomField"
 
-	expected := "URL_PARAMETER"
+	tables := []struct {
+		i *string
+		o Context
+	}{
+		{nil, Unknown},
+		{&dummyString, Unknown},
+		{&readIssueString, ReadIssue},
+		{&editCustomFieldString, EditCustomField},
+	}
 
-	os.Args = make([]string, 0)
-	os.Args = append(os.Args, "parameters_test")
-	os.Args = append(os.Args, fmt.Sprintf("--url=%s", expected))
+	for _, table := range tables {
+		param := &JiraAPIResourceParameters{}
+		param.initializeContext(table.i)
+
+		if param.Context != table.o {
+			t.Errorf("Context value was incorrect, got: %v, want: %v.", param.Context, table.o)
+		}
+	}
+}
+
+func TestParsePtrParameters(t *testing.T) {
+	tables := []struct {
+		in1  string
+		in2  string
+		out1 string
+	}{
+		{"url", "github.com", "JiraAPIUrl"},
+		{"username", "I_AM_USER", "Username"},
+		{"password", "SECRET_PWD", "Password"},
+		{"customFieldName", "Custom_Field_Name", "CustomFieldName"},
+		{"customFieldType", "String", "CustomFieldType"},
+		{"customFieldValue", "123abc", "CustomFieldValue"},
+		{"customFieldValueFromFile", "filename.dummy", "CustomFieldValueFromFile"},
+		{"loggingLevel", "TEST", "LoggingLevel"},
+	}
+
+	for _, table := range tables {
+		param := &JiraAPIResourceParameters{}
+		runFlagTest(t, param, table.in1, table.in2, table.out1)
+	}
+}
+
+func runFlagTest(t *testing.T, param *JiraAPIResourceParameters, p, expected string, refVal string) {
+	os.Args = setupOsArgs(fmt.Sprintf("--%s=%s", p, expected))
 
 	param.Parse()
 
-	testExpectedStringResult(t, *param.JiraAPIUrl, expected)
+	rParam := reflect.Indirect(reflect.ValueOf(param))
+	f := rParam.FieldByName(refVal)
+
+	testExpectedStringResult(t, *f.Interface().(*string), expected)
+
+	// Reset for next test
+	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ExitOnError)
+
+}
+
+func setupOsArgs(vals ...string) []string {
+	args := make([]string, 0)
+	args = append(args, "parameters_test")
+	for _, val := range vals {
+		args = append(args, val)
+	}
+
+	return args
 }
 
 func testExpectedStringResult(t *testing.T, result, expected string) {
@@ -224,7 +284,7 @@ func testExpectedStringResult(t *testing.T, result, expected string) {
 	// But in the context of this test it makes it easier to read if the '!= expected' is added because
 	// the clause can then explicity be read as 'if the result is not expected'
 	if result != expected {
-		t.Errorf("Boolean value was incorrect, got: %s, want: %s.", result, expected)
+		t.Errorf("String value was incorrect, got: %s, want: %s.", result, expected)
 	}
 }
 

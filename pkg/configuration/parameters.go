@@ -51,7 +51,7 @@ const (
 	passwordDefault                     = ""
 	passwordDescription                 = "The password needed to connect to the Jira API"
 	contextDefault                      = ""
-	contextDescription                  = "The context of execution. {'EditCustomField'}"
+	contextDescription                  = "The context of execution. {'ReadIssue', 'EditCustomField'}"
 	issueListDefault                    = ""
 	issueListDescription                = "The issue or list of issues to execute the specified context to"
 	customFieldNameDefault              = ""
