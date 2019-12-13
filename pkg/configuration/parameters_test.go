@@ -151,13 +151,32 @@ func TestContextEditCustomFieldSuccess2(t *testing.T) {
 	testExpectedBoolResult(t, param.Meta.valid, true)
 }
 
-func TestContextEditCustomFieldFailMissingBothValues(t *testing.T) {
+func TestContextEditCustomFieldFailMissingBothValuesNil(t *testing.T) {
 	param := &JiraAPIResourceParameters{
 		JiraAPIUrl: &fakeUrl,
 		Username:   &fakePassword,
 		Password:   &fakePassword,
 		IssueList:  make([]string, 1),
 		Context:    EditCustomField,
+	}
+
+	param.validate()
+	testExpectedBoolResult(t, param.Meta.valid, false)
+
+	if param.Meta.Msg == "" {
+		t.Errorf("String value was incorrect, got empty string but expected a message")
+	}
+}
+
+func TestContextEditCustomFieldFailMissingBothValuesEmpty(t *testing.T) {
+	param := &JiraAPIResourceParameters{
+		JiraAPIUrl:               &fakeUrl,
+		Username:                 &fakePassword,
+		Password:                 &fakePassword,
+		IssueList:                make([]string, 1),
+		Context:                  EditCustomField,
+		CustomFieldValue:         &emptyValue,
+		CustomFieldValueFromFile: &emptyValue,
 	}
 
 	param.validate()
