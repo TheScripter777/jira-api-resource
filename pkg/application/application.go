@@ -42,7 +42,7 @@ func (app *JiraAPIResourceApp) Run() error {
 		return err
 	}
 
-	return app.pipeline.Execute()
+	return app.pipeline.Execute(&app.params)
 }
 
 func (app *JiraAPIResourceApp) initFlagsAndParameters() error {

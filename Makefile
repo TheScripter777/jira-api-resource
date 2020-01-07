@@ -1,4 +1,5 @@
 # Based on: https://github.com/vincentbernat/hellogopher/blob/master/Makefile
+# We also use upx: https://upx.github.io/
 PACKAGE  = jiraApiResource
 DATE    ?= $(shell date +%FT%T%z)
 VERSION ?= $(shell git describe --tags --always --dirty --match=v* 2> /dev/null || \
@@ -28,6 +29,14 @@ full: fmt lint test $(BIN) ; $(info $(M) building executable...) @ ## Build prog
 		-tags release \
 		-ldflags '-X $(PACKAGE)/cmd.Version=$(VERSION) -X $(PACKAGE)/cmd.BuildDate=$(DATE)' \
 		-o $(BIN)/$(PACKAGE) cmd/jira-api/main.go
+
+.PHONY: release
+release: fmt lint $(BIN) ; $(info $(M) building release (with upx tool)...) @ ## Build program binary (with go lint)
+	$Q $(GO) build \
+		-tags release \
+		-ldflags '-s -w -X $(PACKAGE)/cmd.Version=$(VERSION) -X $(PACKAGE)/cmd.BuildDate=$(DATE)' \
+		-o $(BIN)/$(PACKAGE) cmd/jira-api/main.go
+		upx --brute $(BIN)/$(PACKAGE)
 
 # Tools
 
@@ -125,6 +134,14 @@ run: all ; $(info $(M) running $(PACKAGE)...) @ ## Run the latest build
 
 %:
 	@:
+
+.PHONY: put
+put: all ; $(info $(M) exporting $(PACKAGE) to /usr/bin/) @ ## Export the built binary to /usr/bin
+	@cp -f $(BIN)/$(PACKAGE) /usr/bin
+
+.PHONY: putrelease
+putrelease: release ; $(info $(M) exporting $(PACKAGE) to /usr/bin/) @ ## Export the built release to /usr/bin
+	@cp -f $(BIN)/$(PACKAGE) /usr/bin
 
 .PHONY: help
 help:

@@ -13,7 +13,7 @@ type Step struct {
 }
 
 func (s *Step) Execute(csValues CrossStepsValues) error {
-	return service.ExecuteService(s.Service, *s.params)
+	return service.Execute(s.Service, *s.params)
 }
 
 func (s *Step) PrepareNextStep(ns *Step, csValues CrossStepsValues) CrossStepsValues {

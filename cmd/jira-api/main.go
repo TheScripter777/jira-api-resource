@@ -9,7 +9,7 @@ import (
 func main() {
 	app := &application.JiraAPIResourceApp{}
 	if err := app.Run(); err != nil {
-		_, _ = fmt.Fprintf(os.Stderr, "%v", err)
+		_, _ = fmt.Fprintf(os.Stderr, "%v\n", err)
 		os.Exit(1)
 	}
 }

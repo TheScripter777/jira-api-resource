@@ -43,35 +43,17 @@ func PreInitJiraAPI(s Service, params configuration.JiraAPIResourceParameters, h
 	return api, nil
 }
 
-func ExecuteService(s Service, params configuration.JiraAPIResourceParameters) error {
-	if params.Meta.MultipleIssue {
-		for i := range params.IssueList {
-			result, err := exec(s, params, i)
-			if err != nil {
-				return err
-			}
+func Execute(s Service, params configuration.JiraAPIResourceParameters) error {
+	result, err := exec(s, params)
 
-			err = s.PostAPICall(result)
-			if err != nil {
-				return err
-			}
-		}
-
-	} else {
-		result, err := exec(s, params, 0)
-
-		if err != nil {
-			return err
-		}
-
-		return s.PostAPICall(result)
+	if err != nil {
+		return err
 	}
 
-	return nil
+	return s.PostAPICall(result)
 }
 
-func exec(s Service, params configuration.JiraAPIResourceParameters, activeIssueIndex int) (interface{}, error) {
-	params.ActiveIssue = params.IssueList[activeIssueIndex]
+func exec(s Service, params configuration.JiraAPIResourceParameters) (interface{}, error) {
 	api, err := s.InitJiraAPI(params)
 
 	if err != nil {

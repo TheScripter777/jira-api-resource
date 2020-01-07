@@ -12,6 +12,7 @@ import (
 
 type ServiceReadIssue struct {
 	issueId   string
+	parentKey string
 	fieldKey  string
 	fieldName string
 }
@@ -26,6 +27,7 @@ func (s *ServiceReadIssue) InitJiraAPI(params configuration.JiraAPIResourceParam
 func (s *ServiceReadIssue) GetResults() map[string]string {
 	var m = make(map[string]string)
 	m[helpers.ReadingFieldKey] = s.fieldKey
+	m[helpers.ParentIssueKey] = s.parentKey
 	return m
 }
 
@@ -48,13 +50,14 @@ func (s *ServiceReadIssue) PostAPICall(result interface{}) error {
 	if issue, ok := result.(*Issue); !ok {
 		return errors.New("failed to convert result of type interface{} to issue of type reading.Issue")
 	} else {
-
+		// Match custom field name if it was set
 		if s.fieldName != "" {
 			s.fieldKey = helpers.FindCustomName(issue.Names.CustomFields, s.fieldName)
+		}
 
-			if s.fieldKey == "" {
-				return errors.New("failed to retrieve field key from specified custom field name")
-			}
+		// Find parent key if current one isn't "top-level"
+		if issue.Fields.Parent != nil {
+			s.parentKey = issue.Fields.Parent.Key
 		}
 	}
 
