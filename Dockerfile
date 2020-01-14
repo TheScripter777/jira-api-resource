@@ -3,7 +3,7 @@ FROM golang:1.12 AS builder
 LABEL maintainer="Guillaume Rivest" \
     authors="Guillaume Rivest" \
     version="1.0.0" \
-    description="Jira API resource for Concourse CI"
+    description="Jira API resource for managing issues via Concourse CI"
 
 # Copy everything from the jira-api-ressource module to /app in the image
 COPY . /app
@@ -33,7 +33,7 @@ RUN apk --no-cache add \
 ;
 
 # Copy the built binary into the bin folder
-COPY --from=builder /app/bin/jiraApiResource /usr/local/bin/
+COPY --from=builder /app/bin/jiraApiIssueResource /usr/local/bin/
 
 # Copy assets
 COPY assets/check /opt/resource/check

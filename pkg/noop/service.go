@@ -2,8 +2,8 @@ package noop
 
 import (
 	"fmt"
-	"github.com/TurnsCoffeeIntoScripts/jira-api-resource/pkg/configuration"
-	"github.com/TurnsCoffeeIntoScripts/jira-api-resource/pkg/http/rest"
+	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/configuration"
+	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/http/rest"
 )
 
 type ServiceUnknown struct {

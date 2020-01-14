@@ -6,10 +6,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/TurnsCoffeeIntoScripts/jira-api-resource/pkg/configuration"
-	"github.com/TurnsCoffeeIntoScripts/jira-api-resource/pkg/helpers"
-	"github.com/TurnsCoffeeIntoScripts/jira-api-resource/pkg/log"
-	"github.com/TurnsCoffeeIntoScripts/jira-api-resource/pkg/status"
+	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/configuration"
+	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/helpers"
+	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/log"
+	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/status"
 	"net/http"
 )
 

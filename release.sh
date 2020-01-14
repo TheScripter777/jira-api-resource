@@ -3,11 +3,11 @@
 # Need to have credentials to both github and dockerhub to use.
 
 # Building docker image
-docker image build -t turnscoffeeintoscripts/jira-api-resource:$1 .
+docker image build -t turnscoffeeintoscripts/jira-api-issue-resource:$1 .
 
 if [[ $? -eq "0" ]]; then
     # Pushing docker image
-    docker image push turnscoffeeintoscripts/jira-api-resource:$1
+    docker image push turnscoffeeintoscripts/jira-api-issue-resource:$1
 else
     exit 1
 fi

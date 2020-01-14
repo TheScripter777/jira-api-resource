@@ -3,10 +3,10 @@ package reading
 import (
 	"errors"
 	"fmt"
-	"github.com/TurnsCoffeeIntoScripts/jira-api-resource/pkg/configuration"
-	"github.com/TurnsCoffeeIntoScripts/jira-api-resource/pkg/helpers"
-	"github.com/TurnsCoffeeIntoScripts/jira-api-resource/pkg/http/rest"
-	"github.com/TurnsCoffeeIntoScripts/jira-api-resource/pkg/service"
+	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/configuration"
+	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/helpers"
+	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/http/rest"
+	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/service"
 	"net/http"
 )
 

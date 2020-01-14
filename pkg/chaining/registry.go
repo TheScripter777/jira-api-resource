@@ -1,11 +1,11 @@
 package chaining
 
 import (
-	"github.com/TurnsCoffeeIntoScripts/jira-api-resource/pkg/configuration"
-	"github.com/TurnsCoffeeIntoScripts/jira-api-resource/pkg/editing"
-	"github.com/TurnsCoffeeIntoScripts/jira-api-resource/pkg/noop"
-	"github.com/TurnsCoffeeIntoScripts/jira-api-resource/pkg/reading"
-	"github.com/TurnsCoffeeIntoScripts/jira-api-resource/pkg/service"
+	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/configuration"
+	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/editing"
+	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/noop"
+	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/reading"
+	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/service"
 )
 
 const (

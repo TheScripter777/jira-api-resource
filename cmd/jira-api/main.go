@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/TurnsCoffeeIntoScripts/jira-api-resource/pkg/application"
+	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/application"
 	"os"
 )
 

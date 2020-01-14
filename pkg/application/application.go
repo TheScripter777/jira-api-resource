@@ -8,8 +8,8 @@ package application
 import (
 	"errors"
 	"flag"
-	"github.com/TurnsCoffeeIntoScripts/jira-api-resource/pkg/chaining"
-	"github.com/TurnsCoffeeIntoScripts/jira-api-resource/pkg/configuration"
+	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/chaining"
+	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/configuration"
 )
 
 type JiraAPIResourceInterace interface {

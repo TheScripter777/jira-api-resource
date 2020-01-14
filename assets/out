@@ -14,7 +14,7 @@ TMPDIR=${TMPDIR:-/tmp}
 
 destination=${1}
 
-payload=$(mktemp $TMPDIR/jira-api-resource-request.XXXXXX)
+payload=$(mktemp $TMPDIR/jira-api-issue-resource-request.XXXXXX)
 
 cat > $payload <&0
 
@@ -37,7 +37,7 @@ issues=$(<$1/${issuesFileDirectory}/*.txt)
 
 pushd /tmp/build/put
 
-    jiraApiResource \
+    jiraApiIssueResource \
         --url="$url" \
         --username="$username" \
         --password="$password" \

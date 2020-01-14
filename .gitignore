@@ -8,7 +8,7 @@
 *.dll
 *.so
 *.dylib
-jiraApiResource
+jiraApiIssueResource
 
 # Test binary, build with `go test -c`
 *.test

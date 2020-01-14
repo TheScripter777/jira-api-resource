@@ -20,9 +20,9 @@ package configuration
 import (
 	"flag"
 	"fmt"
-	"github.com/TurnsCoffeeIntoScripts/jira-api-resource/pkg/helpers"
-	"github.com/TurnsCoffeeIntoScripts/jira-api-resource/pkg/log"
-	"github.com/TurnsCoffeeIntoScripts/jira-api-resource/pkg/status"
+	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/helpers"
+	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/log"
+	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/status"
 	"strings"
 )
 

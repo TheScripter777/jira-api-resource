@@ -1,14 +1,14 @@
 package rest
 
 import (
-	"github.com/TurnsCoffeeIntoScripts/jira-api-resource/pkg/configuration"
+	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/configuration"
 	"net/http"
 	"testing"
 )
 
 var (
 	emptyValue           = ""
-	fakeUrl              = "https://github.com/TurnsCoffeeIntoScripts/jira-api-resource"
+	fakeUrl              = "https://github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource"
 	fakeUsername         = "dummy_username"
 	fakePassword         = "dummy_password"
 	fakeCustomFieldValue = "dummyValue"

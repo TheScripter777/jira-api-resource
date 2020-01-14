@@ -1,15 +1,13 @@
-# jira-api-resource
+# jira-api-issue-resource
 
 <sub>Some section needs to be updated</sub>
 
 | Version       | Build status | Scrutinizer |
 |---------------|--------------|-------------|
-| `1.0.0`  | [![Build Status](https://travis-ci.org/TurnsCoffeeIntoScripts/jira-api-resource.svg?branch=master)](https://travis-ci.org/TurnsCoffeeIntoScripts/jira-api-resource) | [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/TurnsCoffeeIntoScripts/jira-api-resource/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/TurnsCoffeeIntoScripts/jira-api-resource/?branch=master) |
+| `1.0.1`  | [![Build Status](https://travis-ci.org/TurnsCoffeeIntoScripts/jira-api-issue-resource.svg?branch=master)](https://travis-ci.org/TurnsCoffeeIntoScripts/jira-api-issue-resource) | [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/TurnsCoffeeIntoScripts/jira-api-issue-resource/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/TurnsCoffeeIntoScripts/jira-api-issue-resource/?branch=master) |
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/e6ea2afc744d4fbf8bffc65e794155f4)](https://www.codacy.com/app/TurnsCoffeeIntoScripts/jira-api-resource?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=TurnsCoffeeIntoScripts/jira-api-resource&amp;utm_campaign=Badge_Grade)   
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/e6ea2afc744d4fbf8bffc65e794155f4)](https://www.codacy.com/app/TurnsCoffeeIntoScripts/jira-api-issue-resource?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=TurnsCoffeeIntoScripts/jira-api-issue-resource&amp;utm_campaign=Badge_Grade)   
 <sub>Project certification on default branch (master)</sub>
-
-***This ressource is still under construction. There is no stable release yet. Use at your own risk.***
 
 This [Concourse](https://concourse-ci.org/) resource allows a pipeline to interface with a Jira REST API in order to manage (create/update/delete) tickets.
 
@@ -32,10 +30,10 @@ This [Concourse](https://concourse-ci.org/) resource allows a pipeline to interf
 ## Resource Type Configuration
 ``` yml
 resource_types:
-    - name: jira-api-resource
+    - name: jira-api-issue-resource
       type: docker-image
       source:
-          repository: turnscoffeeintoscripts/jira-api-resource
+          repository: turnscoffeeintoscripts/jira-api-issue-resource
           tag: latest
 ```
 
@@ -43,7 +41,7 @@ resource_types:
 ``` yml
 resources:
     - name: jira
-      type: jira-api-resource
+      type: jira-api-issue-resource
       source:
           url: https://...
           username: XXXX
@@ -88,7 +86,7 @@ The configuration to use to add a comment to the specified ticket(s) is `comment
 ``` yml
 resources:
     - name: jira
-      type: jira-api-resource
+      type: jira-api-issue-resource
       source:
           url: https://...
           username: XXXX
@@ -108,7 +106,7 @@ The configuration to use to add a label to the specified ticket(s) is `add-label
 ```yml
 resources:
     - name: jira
-      type: jira-api-resource
+      type: jira-api-issue-resource
       source:
           url: https://...
           username: XXXX
@@ -135,7 +133,7 @@ The format for each ticket number will follow this format: `([a-zA-Z]+)-([0-9]+)
 **Example:**
 ``` yml
     - name: jira
-      type: jira-api-resource
+      type: jira-api-issue-resource
       source:
           url: https://...
           username: XXXX
@@ -150,7 +148,7 @@ Using this resource, it's also possible to specify a script instead of hard-code
 **Example:**
 ``` yml
     - name: jira
-      type: jira-api-resource
+      type: jira-api-issue-resource
       source:
           url: https://...
           username: XXXX

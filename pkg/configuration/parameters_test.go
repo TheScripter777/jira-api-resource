@@ -11,7 +11,7 @@ import (
 
 var (
 	emptyValue           = ""
-	fakeUrl              = "https://github.com/TurnsCoffeeIntoScripts/jira-api-resource"
+	fakeUrl              = "https://github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource"
 	fakeUsername         = "dummy_username"
 	fakePassword         = "dummy_password"
 	fakeCustomFieldValue = "dummyValue"

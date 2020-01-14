@@ -1,6 +1,6 @@
 # Based on: https://github.com/vincentbernat/hellogopher/blob/master/Makefile
 # We also use upx: https://upx.github.io/
-PACKAGE  = jiraApiResource
+PACKAGE  = jiraApiIssueResource
 DATE    ?= $(shell date +%FT%T%z)
 VERSION ?= $(shell git describe --tags --always --dirty --match=v* 2> /dev/null || \
 			cat $(CURDIR)/.version 2> /dev/null || echo v0)
