@@ -19,7 +19,7 @@ type ServiceReadIssue struct {
 
 func (s *ServiceReadIssue) InitJiraAPI(params configuration.JiraAPIResourceParameters) (rest.JiraAPI, error) {
 	s.issueId = params.ActiveIssue
-	s.fieldName = *params.CustomFieldName
+	s.fieldName = *params.EditCustomFieldParam.CustomFieldName
 
 	return service.PreInitJiraAPI(s, params, http.MethodGet)
 }

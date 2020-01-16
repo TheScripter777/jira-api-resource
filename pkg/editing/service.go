@@ -28,7 +28,7 @@ type ServiceEditCustomField struct {
 func (s *ServiceEditCustomField) InitJiraAPI(params configuration.JiraAPIResourceParameters) (rest.JiraAPI, error) {
 	s.issueId = params.ActiveIssue
 	val, err := s.extractValue(params)
-	s.fieldType = *params.CustomFieldType
+	s.fieldType = *params.EditCustomFieldParam.CustomFieldType
 
 	if err != nil {
 		return rest.JiraAPI{}, err
@@ -90,10 +90,10 @@ func (s *ServiceEditCustomField) Name() string {
 }
 
 func (s *ServiceEditCustomField) extractValue(params configuration.JiraAPIResourceParameters) (string, error) {
-	if !helpers.IsStringPtrNilOrEmtpy(params.CustomFieldValue) {
-		return *params.CustomFieldValue, nil
-	} else if !helpers.IsStringPtrNilOrEmtpy(params.CustomFieldValueFromFile) {
-		b, err := ioutil.ReadFile(*params.CustomFieldValueFromFile)
+	if !helpers.IsStringPtrNilOrEmtpy(params.EditCustomFieldParam.CustomFieldValue) {
+		return *params.EditCustomFieldParam.CustomFieldValue, nil
+	} else if !helpers.IsStringPtrNilOrEmtpy(params.EditCustomFieldParam.CustomFieldValueFromFile) {
+		b, err := ioutil.ReadFile(*params.EditCustomFieldParam.CustomFieldValueFromFile)
 		if err != nil {
 			return "", err
 		}

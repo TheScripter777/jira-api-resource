@@ -34,6 +34,7 @@ const (
 	password                 = "password"
 	context                  = "context"
 	issueList                = "issues"
+	projectKey               = "projectKey"
 	customFieldName          = "customFieldName"
 	customFieldType          = "customFieldType"
 	customFieldValueAsIs     = "customFieldValue"
@@ -54,6 +55,8 @@ const (
 	contextDescription                  = "The context of execution. {'ReadIssue', 'EditCustomField'}"
 	issueListDefault                    = ""
 	issueListDescription                = "The issue or list of issues to execute the specified context to"
+	projectKeyDefault                   = ""
+	projectKeyDescription               = ""
 	customFieldNameDefault              = ""
 	customFieldNameDescription          = "Certain operation (such as edits) might require the user to specify the name of the custome field so that the resource may find the appropriate custom field"
 	customFieldTypeDefault              = "string"
@@ -72,16 +75,16 @@ const (
 // They are all parsed via the flag.Parse() method of the Go flags api. The struct also contains the meta-parameters
 // (see meta-parametes.go).
 type JiraAPIResourceParameters struct {
-	JiraAPIUrl               *string
-	Username                 *string
-	Password                 *string
-	Context                  Context
-	IssueList                []string
-	CustomFieldName          *string
-	CustomFieldType          *string
-	CustomFieldValue         *string
-	CustomFieldValueFromFile *string
-	LoggingLevel             *string
+	JiraAPIUrl   *string
+	Username     *string
+	Password     *string
+	Context      Context
+	IssueList    []string
+	ProjectKey   *string
+	LoggingLevel *string
+
+	ReadIssueParam       JiraApiResourceParametersReadIssue
+	EditCustomFieldParam JiraApiResourceParametersEditCustomField
 
 	ActiveIssue string         // The **SINGLE** issue that the resource is currently processing
 	Meta        MetaParameters //
@@ -93,6 +96,16 @@ type JiraAPIResourceParameters struct {
 // purposes.
 type JiraAPIResourceFlags struct {
 	ForceOnParent *bool
+}
+
+type JiraApiResourceParametersReadIssue struct {
+}
+
+type JiraApiResourceParametersEditCustomField struct {
+	CustomFieldName          *string
+	CustomFieldType          *string
+	CustomFieldValue         *string
+	CustomFieldValueFromFile *string
 }
 
 // Method that initialize every parameters/flags and makes the actual call the flag.Parse(). A few custom operation are
@@ -107,10 +120,11 @@ func (param *JiraAPIResourceParameters) Parse() {
 	param.Password = flag.String(password, passwordDefault, passwordDescription)
 	contextString = flag.String(context, contextDefault, contextDescription)
 	issueListString = flag.String(issueList, issueListDefault, issueListDescription)
-	param.CustomFieldName = flag.String(customFieldName, customFieldNameDefault, customFieldNameDescription)
-	param.CustomFieldType = flag.String(customFieldType, customFieldTypeDefault, customFieldTypeDescription)
-	param.CustomFieldValue = flag.String(customFieldValueAsIs, customFieldValueAsIsDefault, customFieldValueAsIsDescription)
-	param.CustomFieldValueFromFile = flag.String(customFieldValueFromFile, customFieldValueFromFileDefault, customFieldValueFromFileDescription)
+	param.ProjectKey = flag.String(projectKey, projectKeyDefault, projectKeyDescription)
+	param.EditCustomFieldParam.CustomFieldName = flag.String(customFieldName, customFieldNameDefault, customFieldNameDescription)
+	param.EditCustomFieldParam.CustomFieldType = flag.String(customFieldType, customFieldTypeDefault, customFieldTypeDescription)
+	param.EditCustomFieldParam.CustomFieldValue = flag.String(customFieldValueAsIs, customFieldValueAsIsDefault, customFieldValueAsIsDescription)
+	param.EditCustomFieldParam.CustomFieldValueFromFile = flag.String(customFieldValueFromFile, customFieldValueFromFileDefault, customFieldValueFromFileDescription)
 	param.LoggingLevel = flag.String(loggingLevel, loggingLevelDefault, loggingLevelDescription)
 
 	// Parsing flags
@@ -132,13 +146,17 @@ func (param *JiraAPIResourceParameters) validate() {
 	param.Meta.mandatoryPresent = true
 	param.Meta.valid = true
 
-	if *param.JiraAPIUrl == "" || *param.Username == "" || *param.Password == "" || param.IssueList == nil {
+	if *param.JiraAPIUrl == "" || *param.Username == "" || *param.Password == "" {
 		// In this case we are missing one or more mandatory parameters
 		// This also causes the input parameters to not be valid
 		param.Meta.mandatoryPresent = false
 		param.Meta.valid = false
-	} else if len(param.IssueList) == 0 {
-		// This is the case where the issue's list was passed but it was empty
+	} else if param.IssueList == nil || len(param.IssueList) == 0 || helpers.IsStringPtrNilOrEmtpy(param.ProjectKey) {
+		// This case is either
+		//   - A nil issue list
+		//   - An issue list that was passed but is empty
+		//   - A nil or empty project key
+		// All of those need to cause an invalid state
 		param.Meta.valid = false
 	}
 
@@ -156,7 +174,7 @@ func (param *JiraAPIResourceParameters) validate() {
 			param.Meta.valid = false
 			param.Meta.Msg = "Unknown context"
 		case EditCustomField:
-			if helpers.IsStringPtrNilOrEmtpy(param.CustomFieldValue) && helpers.IsStringPtrNilOrEmtpy(param.CustomFieldValueFromFile) {
+			if helpers.IsStringPtrNilOrEmtpy(param.EditCustomFieldParam.CustomFieldValue) && helpers.IsStringPtrNilOrEmtpy(param.EditCustomFieldParam.CustomFieldValueFromFile) {
 				// In the context of editing a custom field, there's an absolute need to have the value passed as input
 				// Here we detected that nothing was passed. The meta-parameter 'valid' must then be set to false
 				param.Meta.valid = false
