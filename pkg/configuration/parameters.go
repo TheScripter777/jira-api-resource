@@ -20,9 +20,9 @@ package configuration
 import (
 	"flag"
 	"fmt"
+	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/auth"
 	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/helpers"
 	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/log"
-	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/status"
 	"strings"
 )
 
@@ -32,9 +32,9 @@ const (
 	jiraAPIURL               = "url"
 	username                 = "username"
 	password                 = "password"
+	destination              = "destination"
 	context                  = "context"
 	issueList                = "issues"
-	projectKey               = "projectKey"
 	customFieldName          = "customFieldName"
 	customFieldType          = "customFieldType"
 	customFieldValueAsIs     = "customFieldValue"
@@ -51,12 +51,12 @@ const (
 	usernameDescription                 = "The username used to connect to the Jira API"
 	passwordDefault                     = ""
 	passwordDescription                 = "The password needed to connect to the Jira API"
+	destinationDefault                  = "./"
+	destinationDescription              = "The destination to output new version(s) when using the 'in'"
 	contextDefault                      = ""
 	contextDescription                  = "The context of execution. {'ReadIssue', 'EditCustomField'}"
 	issueListDefault                    = ""
 	issueListDescription                = "The issue or list of issues to execute the specified context to"
-	projectKeyDefault                   = ""
-	projectKeyDescription               = ""
 	customFieldNameDefault              = ""
 	customFieldNameDescription          = "Certain operation (such as edits) might require the user to specify the name of the custome field so that the resource may find the appropriate custom field"
 	customFieldTypeDefault              = "string"
@@ -78,9 +78,9 @@ type JiraAPIResourceParameters struct {
 	JiraAPIUrl   *string
 	Username     *string
 	Password     *string
+	Destination  *string
 	Context      Context
 	IssueList    []string
-	ProjectKey   *string
 	LoggingLevel *string
 
 	ReadIssueParam       JiraApiResourceParametersReadIssue
@@ -101,6 +101,9 @@ type JiraAPIResourceFlags struct {
 type JiraApiResourceParametersReadIssue struct {
 }
 
+type JiraApiResourceParametersReadStatus struct {
+}
+
 type JiraApiResourceParametersEditCustomField struct {
 	CustomFieldName          *string
 	CustomFieldType          *string
@@ -118,9 +121,9 @@ func (param *JiraAPIResourceParameters) Parse() {
 	param.JiraAPIUrl = flag.String(jiraAPIURL, jiraAPIURLDefault, jiraAPIURLDescription)
 	param.Username = flag.String(username, usernameDefault, usernameDescription)
 	param.Password = flag.String(password, passwordDefault, passwordDescription)
+	param.Destination = flag.String(destination, destinationDefault, destinationDescription)
 	contextString = flag.String(context, contextDefault, contextDescription)
 	issueListString = flag.String(issueList, issueListDefault, issueListDescription)
-	param.ProjectKey = flag.String(projectKey, projectKeyDefault, projectKeyDescription)
 	param.EditCustomFieldParam.CustomFieldName = flag.String(customFieldName, customFieldNameDefault, customFieldNameDescription)
 	param.EditCustomFieldParam.CustomFieldType = flag.String(customFieldType, customFieldTypeDefault, customFieldTypeDescription)
 	param.EditCustomFieldParam.CustomFieldValue = flag.String(customFieldValueAsIs, customFieldValueAsIsDefault, customFieldValueAsIsDescription)
@@ -146,12 +149,12 @@ func (param *JiraAPIResourceParameters) validate() {
 	param.Meta.mandatoryPresent = true
 	param.Meta.valid = true
 
-	if *param.JiraAPIUrl == "" || *param.Username == "" || *param.Password == "" {
+	if *param.JiraAPIUrl == "" || *param.Username == "" || *param.Password == "" || helpers.IsStringPtrNilOrEmtpy(param.Destination) {
 		// In this case we are missing one or more mandatory parameters
 		// This also causes the input parameters to not be valid
 		param.Meta.mandatoryPresent = false
 		param.Meta.valid = false
-	} else if param.IssueList == nil || len(param.IssueList) == 0 || helpers.IsStringPtrNilOrEmtpy(param.ProjectKey) {
+	} else if param.IssueList == nil || len(param.IssueList) == 0 {
 		// This case is either
 		//   - A nil issue list
 		//   - An issue list that was passed but is empty
@@ -160,8 +163,8 @@ func (param *JiraAPIResourceParameters) validate() {
 		param.Meta.valid = false
 	}
 
-	status.Username = *param.Username
-	status.Password = *param.Password
+	auth.Username = *param.Username
+	auth.Password = *param.Password
 
 	if param.Meta.mandatoryPresent && param.Meta.valid {
 		// Next the initialized context needs to be validated against the input parameters
@@ -183,6 +186,8 @@ func (param *JiraAPIResourceParameters) validate() {
 					customFieldValueFromFile)
 			}
 		case ReadIssue:
+			fallthrough
+		case ReadStatus:
 			fallthrough
 		default:
 			param.Meta.valid = true

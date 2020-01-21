@@ -45,3 +45,7 @@ func (s *ServiceUnknown) PostAPICall(result interface{}) error {
 func (s *ServiceUnknown) Name() string {
 	return "ServiceUnknown"
 }
+
+func (s *ServiceUnknown) ExecuteAsLastStep(ctx configuration.Context) error {
+	return nil
+}

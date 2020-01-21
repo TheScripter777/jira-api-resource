@@ -8,12 +8,13 @@ import (
 type Step struct {
 	Service service.Service
 	Name    string
+	Last    bool
 
 	params *configuration.JiraAPIResourceParameters
 }
 
-func (s *Step) Execute(csValues CrossStepsValues) error {
-	return service.Execute(s.Service, *s.params)
+func (s *Step) Execute(csValues CrossStepsValues, lastStep bool) error {
+	return service.Execute(s.Service, *s.params, lastStep)
 }
 
 func (s *Step) PrepareNextStep(ns *Step, csValues CrossStepsValues) CrossStepsValues {

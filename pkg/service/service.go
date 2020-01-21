@@ -32,6 +32,8 @@ type Service interface {
 	PostAPICall(result interface{}) error
 
 	Name() string
+
+	ExecuteAsLastStep(ctx configuration.Context) error
 }
 
 func PreInitJiraAPI(s Service, params configuration.JiraAPIResourceParameters, httpMethod string) (rest.JiraAPI, error) {
@@ -43,11 +45,19 @@ func PreInitJiraAPI(s Service, params configuration.JiraAPIResourceParameters, h
 	return api, nil
 }
 
-func Execute(s Service, params configuration.JiraAPIResourceParameters) error {
+func Execute(s Service, params configuration.JiraAPIResourceParameters, lastStep bool) error {
 	result, err := exec(s, params)
 
 	if err != nil {
 		return err
+	}
+
+	if lastStep {
+		if err := s.PostAPICall(result); err != nil {
+			return err
+		}
+
+		return s.ExecuteAsLastStep(params.Context)
 	}
 
 	return s.PostAPICall(result)

@@ -1,3 +1,50 @@
 #!/bin/bash
 
-echo '{"version":{"ref":"none"}}'
+set -e
+
+exec 3>&1 # make stdout available as fd3 for the result
+exec 1>&2 # redirect all output to stderr for logging
+
+# for assets
+PATH=$PATH:/opt/resource
+
+# for jq
+PATH=/usr/local/bin/:$PATH
+TMPDIR=${TMPDIR:-/tmp}
+
+source $(dirname $0)/common
+
+destination=${1}
+
+payload=$(mktemp $TMPDIR/jira-api-issue-resource-request.XXXXXX)
+
+cat > $payload <&0
+
+# Reading source configuration
+url=$(jq -r '.source.url // ""' < ${payload})
+username=$(jq -r '.source.username // ""' < ${payload})
+password=$(jq -r '.source.password // ""' < ${payload})
+context=$(jq -r '.source.context // ""' < ${payload})
+loggingLevel=$(jq -r '.source.logging_level // ""' < ${payload})
+flags=$(jq -r '.source.flags // ""' < ${payload})
+
+# Reading params configuration
+issuesFileDirectory=$(jq -r '.params.file_location // ""' < ${payload})
+customFieldValue=$(jq -r '.params.custom_field_value // ""' < ${payload})
+customFieldValueFromFile=$(jq -r '.params.custom_field_value_from_file // ""' < ${payload})
+
+issues=$(<$1/${issuesFileDirectory}/*.txt)
+
+pushd /tmp/build/get
+    resourceDestination=$destination/jira-api-issue-resource.txt
+
+    jiraApiIssueResource \
+        --url="$url" \
+        --username="$username" \
+        --password="$password" \
+        --destination="$resourceDestination" \
+        --context="$context" \
+        --issues="$issues" \
+        --loggingLevel="$loggingLevel" \
+        $flags
+popd

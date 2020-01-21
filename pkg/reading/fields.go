@@ -1,5 +1,7 @@
 package reading
 
 type Fields struct {
-	Parent *Issue `json:"parent"`
+	IssueType *IssueType `json:"issueType"`
+	Parent    *Issue     `json:"parent"`
+	Status    *Status    `json:"status"`
 }

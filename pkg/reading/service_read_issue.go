@@ -1,25 +1,31 @@
 package reading
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/configuration"
 	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/helpers"
 	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/http/rest"
+	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/result"
 	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/service"
 	"net/http"
+	"os"
 )
 
 type ServiceReadIssue struct {
-	issueId   string
-	parentKey string
-	fieldKey  string
-	fieldName string
+	issueId     string
+	parentKey   string
+	fieldKey    string
+	fieldName   string
+	statusName  string
+	destination string
 }
 
 func (s *ServiceReadIssue) InitJiraAPI(params configuration.JiraAPIResourceParameters) (rest.JiraAPI, error) {
 	s.issueId = params.ActiveIssue
 	s.fieldName = *params.EditCustomFieldParam.CustomFieldName
+	s.destination = *params.Destination
 
 	return service.PreInitJiraAPI(s, params, http.MethodGet)
 }
@@ -63,6 +69,11 @@ func (s *ServiceReadIssue) PostAPICall(result interface{}) error {
 		if issue.Fields.Parent != nil {
 			s.parentKey = issue.Fields.Parent.Key
 		}
+
+		// Find the id of the status of the current Jira issue
+		if issue.Fields.Status != nil {
+			s.statusName = issue.Fields.Status.Name
+		}
 	}
 
 	return nil
@@ -70,4 +81,26 @@ func (s *ServiceReadIssue) PostAPICall(result interface{}) error {
 
 func (s *ServiceReadIssue) Name() string {
 	return "ServiceReadIssue"
+}
+func (s *ServiceReadIssue) ExecuteAsLastStep(ctx configuration.Context) error {
+	if file, err := result.CreateDestination(s.destination); err != nil {
+		return err
+	} else {
+
+		switch ctx {
+		case configuration.ReadStatus:
+			vs := VersionStatus{Status: s.statusName}
+			err := json.NewEncoder(os.Stdout).Encode(InResponse{
+				Version: vs,
+			})
+
+			if err != nil {
+				return err
+			}
+
+			return result.Write(file, s.statusName)
+		}
+	}
+
+	return nil
 }

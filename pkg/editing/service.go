@@ -89,6 +89,10 @@ func (s *ServiceEditCustomField) Name() string {
 	return "ServiceEditCustomField"
 }
 
+func (s *ServiceEditCustomField) ExecuteAsLastStep(ctx configuration.Context) error {
+	return nil
+}
+
 func (s *ServiceEditCustomField) extractValue(params configuration.JiraAPIResourceParameters) (string, error) {
 	if !helpers.IsStringPtrNilOrEmtpy(params.EditCustomFieldParam.CustomFieldValue) {
 		return *params.EditCustomFieldParam.CustomFieldValue, nil

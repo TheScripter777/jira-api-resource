@@ -6,10 +6,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/auth"
 	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/configuration"
 	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/helpers"
 	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/log"
-	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/status"
 	"net/http"
 )
 
@@ -72,7 +72,7 @@ func (api *JiraAPI) Call() (interface{}, error) {
 		req.Header.Set("Content-Type", "application/json")
 
 		log.Logger.Debug("Setting http basic auth for api call")
-		req.SetBasicAuth(status.Username, status.Password)
+		req.SetBasicAuth(auth.Username, auth.Password)
 	}
 
 	log.Logger.Infof("Sending %s request", api.HttpMethod)

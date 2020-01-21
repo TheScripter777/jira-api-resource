@@ -2,10 +2,10 @@ FROM golang:1.12 AS builder
 
 ARG VERSION
 
-LABEL maintainer="Guillaume Rivest" \
-    authors="Guillaume Rivest" \
-    version=${VERSION} \
-    description="Jira API resource for managing issues via Concourse CI"
+LABEL maintainer="Guillaume Rivest"
+LABEL authors="Guillaume Rivest"
+LABEL version=${VERSION}
+LABEL description="Jira API resource for managing issues via Concourse CI"
 
 # Copy everything from the jira-api-ressource module to /app in the image
 COPY . /app
