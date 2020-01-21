@@ -16,7 +16,12 @@ type Pipeline struct {
 
 func (p *Pipeline) BuildPipelineFromChain(chain []service.Service, params *configuration.JiraAPIResourceParameters) error {
 	for s := range chain {
-		p.addStep(chain[s], params)
+		// Last element so we set the lastStep flag to true to trigger the output
+		if s == len(chain)-1 {
+			p.addStep(chain[s], params, true)
+		} else {
+			p.addStep(chain[s], params, false)
+		}
 	}
 
 	p.length = len(p.steps)
@@ -24,11 +29,12 @@ func (p *Pipeline) BuildPipelineFromChain(chain []service.Service, params *confi
 	return nil
 }
 
-func (p *Pipeline) addStep(s service.Service, params *configuration.JiraAPIResourceParameters) {
+func (p *Pipeline) addStep(s service.Service, params *configuration.JiraAPIResourceParameters, lastStep bool) {
 	newStep := Step{}
 	newStep.Service = s
 	newStep.Name = s.Name()
 	newStep.params = params
+	newStep.Last = lastStep
 
 	p.steps = append(p.steps, newStep)
 }
@@ -55,7 +61,7 @@ func (p *Pipeline) singleExecution(params *configuration.JiraAPIResourceParamete
 		if params.Flags.ForceOnParent != nil && *params.Flags.ForceOnParent {
 			log.Logger.Debug("Executing pre-step to validate parent status")
 			tempService := &reading.ServiceReadIssue{}
-			tempErr := service.Execute(tempService, *params)
+			tempErr := service.Execute(tempService, *params, false)
 			if tempErr != nil {
 				return tempErr
 			}
@@ -66,7 +72,7 @@ func (p *Pipeline) singleExecution(params *configuration.JiraAPIResourceParamete
 		}
 
 		log.Logger.Debug("Executing step (", index+1, "/", p.length, ")", p.steps[index].Name)
-		err := p.steps[index].Execute(p.csValues)
+		err := p.steps[index].Execute(p.csValues, p.steps[index].Last)
 
 		if err != nil {
 			return err

@@ -5,6 +5,14 @@ The format of this file is based on [Keep a Changelog](https://keepachangelog.co
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] 
+### Added
+- 'in' script for concourse integration
+- Allows to read the status (open, in progress, etc...) of an issue
+- Added structs that allows mapping of an 'in' response (version, metadata)
+- New concept allows service to execute 'as last step' of a pipeleine (useful for outputing results)
+### Changed
+- Renamed package containing auth info from 'status' to 'auth'
+- Update to release script for readability
 
 ## [1.0.5] - 2020-01-16
 ### Changed

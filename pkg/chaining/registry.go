@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	ServiceReadIssueName       = "srv_read"
+	ServiceReadIssueName       = "srv_read_issue"
 	ServiceEditCustomFieldName = "srv_edit_field"
 	ServiceUnknownName         = "srv_unknown"
 )
@@ -27,6 +27,8 @@ func GetServicesChain(c configuration.Context) []service.Service {
 
 	switch c {
 	case configuration.ReadIssue:
+		chain = append(chain, serviceRegistry[ServiceReadIssueName])
+	case configuration.ReadStatus:
 		chain = append(chain, serviceRegistry[ServiceReadIssueName])
 	case configuration.EditCustomField:
 		chain = append(chain, serviceRegistry[ServiceReadIssueName])
