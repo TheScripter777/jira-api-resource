@@ -14,6 +14,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Renamed package containing auth info from 'status' to 'auth'
 - Update to release script for readability
 
+## [1.1.0] - 2020-01-21
+### Added
+- 'in' script for concourse integration
+- Allows to read the status (open, in progress, etc...) of an issue
+- Added structs that allows mapping of an 'in' response (version, metadata)
+- New concept allows service to execute 'as last step' of a pipeleine (useful for outputing results)
+### Changed
+- Renamed package containing auth info from 'status' to 'auth'
+- Update to release script for readability
+
 ## [1.0.5] - 2020-01-16
 ### Changed
 - Compartmentalized the parameters according to their respective main context. This allows for clearer read and use.
