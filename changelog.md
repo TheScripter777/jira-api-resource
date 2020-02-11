@@ -5,8 +5,6 @@ The format of this file is based on [Keep a Changelog](https://keepachangelog.co
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] 
-### Changed
-- Changed the whitespace removal for a simple field extraction instead
 
 ## [1.1.2] - 2020-02-11
 ### Changed
