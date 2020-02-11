@@ -16,12 +16,8 @@ type Pipeline struct {
 
 func (p *Pipeline) BuildPipelineFromChain(chain []service.Service, params *configuration.JiraAPIResourceParameters) error {
 	for s := range chain {
-		// Last element so we set the lastStep flag to true to trigger the output
-		if s == len(chain)-1 {
-			p.addStep(chain[s], params, true)
-		} else {
-			p.addStep(chain[s], params, false)
-		}
+		// If it's the last element, then the lastStep flag is set to true to trigger the output
+		p.addStep(chain[s], params, s == len(chain)-1)
 	}
 
 	p.length = len(p.steps)

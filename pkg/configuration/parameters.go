@@ -208,10 +208,7 @@ func (param *JiraAPIResourceParameters) initializeIssueList(issueListString *str
 		// Clean list to make sure we don't have [,],{,},(,) characters
 		issueListStringCleaned := helpers.CleanString(*issueListString)
 
-		// Also remove all whitespaces
-		issueListStringCleaned = strings.TrimSpace(issueListStringCleaned)
-
-		param.IssueList = strings.Split(issueListStringCleaned, ",")
+		param.IssueList = strings.Fields(issueListStringCleaned)
 
 		param.IssueList = helpers.CleanStringSlice(param.IssueList)
 
