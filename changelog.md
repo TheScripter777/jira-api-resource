@@ -15,6 +15,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Renamed package containing auth info from 'status' to 'auth'
 - Update to release script for readability
 
+## [1.1.1] - 2020-02-11
+### Added
+- 'in' script for concourse integration
+- Allows to read the status (open, in progress, etc...) of an issue
+- Added structs that allows mapping of an 'in' response (version, metadata)
+- New concept allows service to execute 'as last step' of a pipeline (useful for outputing results)
+- Fixed bug of "Ticket doesn't exist" caused by trailing whitespaces in issues list
+### Changed
+- Renamed package containing auth info from 'status' to 'auth'
+- Update to release script for readability
+
 ## [1.1.0] - 2020-01-21
 ### Added
 - 'in' script for concourse integration
