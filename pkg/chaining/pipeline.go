@@ -1,6 +1,7 @@
 package chaining
 
 import (
+	"fmt"
 	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/configuration"
 	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/helpers"
 	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/log"
@@ -57,12 +58,17 @@ func (p *Pipeline) singleExecution(params *configuration.JiraAPIResourceParamete
 		if params.Flags.ForceOnParent != nil && *params.Flags.ForceOnParent {
 			log.Logger.Debug("Executing pre-step to validate parent status")
 			tempService := &reading.ServiceReadIssue{}
+			// Manually force this flag 'SkipCustomKeyRetrieval'.
+			// This is done so that when reading the issue from the API no attempt at extracting
+			// the custom field ID will be made preventing an error.
+			tempService.SkipCustomKeyRetrieval = true
 			tempErr := service.Execute(tempService, *params, false)
 			if tempErr != nil {
 				return tempErr
 			}
 
 			if tempService.GetResults()[helpers.ParentIssueKey] != "" {
+				log.Logger.Debug(fmt.Sprintf("Setting parent key: %s\n", tempService.GetResults()[helpers.ParentIssueKey]))
 				params.ActiveIssue = tempService.GetResults()[helpers.ParentIssueKey]
 			}
 		}

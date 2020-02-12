@@ -43,6 +43,7 @@ const (
 
 	// Flags
 	forceOnParent = "forceOnParent"
+	forceOpen     = "forceOpen"
 
 	// Default values and descriptions for both paramaters and flags
 	jiraAPIURLDefault                   = ""
@@ -68,7 +69,9 @@ const (
 	loggingLevelDefault                 = "INFO"
 	loggingLevelDescription             = "The level of the loggers of the application {'ALL', 'DEBUG', 'ERROR', 'INFO', 'WARN', 'OFF'}"
 	_                                   = /*forceOnParentDefault*/ false
-	forceOnParentDescription            = "Flags that indicates if we want to force all operation on the parent issue (if there's one)"
+	forceOnParentDescription            = "Flag that indicates if we want to force all operation on the parent issue (if there's one)"
+	_                                   = /*forceOpenDefault*/ false
+	forceOpenDescription                = "Flag that will, if the issue if closed, forcefully open it, apply the changes and then close it back"
 )
 
 // JiraAPIResourceParameters is a struct that holds every possible parameters/flags known by the application.
@@ -96,6 +99,7 @@ type JiraAPIResourceParameters struct {
 // purposes.
 type JiraAPIResourceFlags struct {
 	ForceOnParent *bool
+	ForceOpen     *bool
 }
 
 type JiraApiResourceParametersReadIssue struct {
@@ -132,6 +136,7 @@ func (param *JiraAPIResourceParameters) Parse() {
 
 	// Parsing flags
 	param.Flags.ForceOnParent = flag.Bool(forceOnParent, false, forceOnParentDescription)
+	param.Flags.ForceOpen = flag.Bool(forceOpen, false, forceOpenDescription)
 
 	if !param.Meta.parsed {
 		flag.Parse()
@@ -185,9 +190,13 @@ func (param *JiraAPIResourceParameters) validate() {
 					customFieldValueAsIs,
 					customFieldValueFromFile)
 			}
-		case ReadIssue:
-			fallthrough
 		case ReadStatus:
+			if helpers.IsStringPtrNilOrEmtpy(param.Destination) {
+				// This context requires a destination to store the ouput on concourse
+				param.Meta.valid = false
+				param.Meta.Msg = fmt.Sprintf("Missing destination")
+			}
+		case ReadIssue:
 			fallthrough
 		default:
 			param.Meta.valid = true

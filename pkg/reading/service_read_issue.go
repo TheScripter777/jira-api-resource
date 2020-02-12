@@ -14,6 +14,8 @@ import (
 )
 
 type ServiceReadIssue struct {
+	SkipCustomKeyRetrieval bool
+
 	issueId     string
 	parentKey   string
 	fieldKey    string
@@ -57,7 +59,7 @@ func (s *ServiceReadIssue) PostAPICall(result interface{}) error {
 		return errors.New("failed to convert result of type interface{} to issue of type reading.Issue")
 	} else {
 		// Match custom field name if it was set
-		if s.fieldName != "" {
+		if !s.SkipCustomKeyRetrieval && s.fieldName != "" {
 			s.fieldKey = helpers.FindCustomName(issue.Names.CustomFields, s.fieldName)
 
 			if s.fieldKey == "" {

@@ -5,6 +5,9 @@ The format of this file is based on [Keep a Changelog](https://keepachangelog.co
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] 
+### Added
+- 'forceOpen' flag in the parameters object (not yet used but recognized)
+- Internal mechanic to prevent the custom field ID extraction when reading an issue for its parent status
 
 ## [1.1.2] - 2020-02-11
 ### Changed
