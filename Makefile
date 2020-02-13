@@ -31,7 +31,7 @@ full: fmt lint test $(BIN) ; $(info $(M) building executable...) @ ## Build prog
 		-o $(BIN)/$(PACKAGE) cmd/jira-api/main.go
 
 .PHONY: release
-release: fmt lint $(BIN) ; $(info $(M) building release (with upx tool)...) @ ## Build program binary (with go lint)
+release: fmt lint test $(BIN) ; $(info $(M) building release (with upx tool)...) @ ## Build program binary (with go lint)
 	$Q $(GO) build \
 		-tags release \
 		-ldflags '-s -w -X $(PACKAGE)/cmd.Version=$(VERSION) -X $(PACKAGE)/cmd.BuildDate=$(DATE)' \
