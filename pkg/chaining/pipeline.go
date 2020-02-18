@@ -62,6 +62,12 @@ func (p *Pipeline) singleExecution(params *configuration.JiraAPIResourceParamete
 		return err
 	}
 
+	if p.csValues.mapping[helpers.IssueForceOpenKey] != "" {
+		if forcedOpen = PerformForceOpen(params); forcedOpen {
+			p.csValues.mapping[helpers.IssueForceOpenKey] = ""
+		}
+	}
+
 	for index := range p.steps {
 		log.Logger.Debug("Executing step (", index+1, "/", p.length, ")", p.steps[index].Name)
 		err := p.steps[index].Execute(p.csValues, p.steps[index].Last)
@@ -79,12 +85,6 @@ func (p *Pipeline) singleExecution(params *configuration.JiraAPIResourceParamete
 		if index < p.length-1 {
 			ns := &p.steps[index+1]
 			p.csValues = p.steps[index].PrepareNextStep(ns, p.csValues)
-		}
-
-		if p.csValues.mapping[helpers.IssueForceOpenKey] != "" {
-			if forcedOpen = PerformForceOpen(params); forcedOpen {
-				p.csValues.mapping[helpers.IssueForceOpenKey] = ""
-			}
 		}
 	}
 
