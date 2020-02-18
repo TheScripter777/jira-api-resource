@@ -12,10 +12,11 @@ const (
 	ReadIssue Context = iota
 	ReadStatus
 	EditCustomField
+	AddComment
 	Unknown
 )
 
-var names = [...]string{"ReadIssue", "ReadStatus", "EditCustomField", "Unknown"}
+var names = [...]string{"ReadIssue", "ReadStatus", "EditCustomField", "AddComment", "Unknown"}
 
 // Returns the string value of the current Context
 func (c Context) String() string {

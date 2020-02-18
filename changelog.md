@@ -5,6 +5,8 @@ The format of this file is based on [Keep a Changelog](https://keepachangelog.co
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] 
+### Added
+- Implemented the 'AddComment' context
 
 ## [1.2.0] - 2020-02-18
 ### Added

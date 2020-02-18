@@ -1,6 +1,7 @@
 package chaining
 
 import (
+	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/commenting"
 	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/configuration"
 	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/editing"
 	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/noop"
@@ -15,6 +16,7 @@ const (
 	ServiceEditCustomFieldName = "srv_edit_field"
 	ServiceGetTransitions      = "srv_get_transitions"
 	ServiceDoTransition        = "srv_do_transitions"
+	ServiceAddComment          = "srv_add_comment"
 	ServiceUnknownName         = "srv_unknown"
 )
 
@@ -26,6 +28,7 @@ func InitServiceRegistry() {
 	serviceRegistry[ServiceEditCustomFieldName] = &editing.ServiceEditCustomField{}
 	serviceRegistry[ServiceGetTransitions] = &status.ServiceGetTransitions{}
 	serviceRegistry[ServiceDoTransition] = &status.ServiceDoTransition{}
+	serviceRegistry[ServiceAddComment] = &commenting.ServiceAddComment{}
 	serviceRegistry[ServiceUnknownName] = &noop.ServiceUnknown{}
 }
 
@@ -40,6 +43,8 @@ func GetServicesChain(c configuration.Context) []service.Service {
 	case configuration.EditCustomField:
 		chain = append(chain, serviceRegistry[ServiceReadIssueName])
 		chain = append(chain, serviceRegistry[ServiceEditCustomFieldName])
+	case configuration.AddComment:
+		chain = append(chain, serviceRegistry[ServiceAddComment])
 	case configuration.Unknown:
 		fallthrough
 	default:

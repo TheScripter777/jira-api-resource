@@ -33,6 +33,7 @@ issuesList=$(jq -r '.params.issues // ""' < ${payload})
 issuesFileDirectory=$(jq -r '.params.issue_file_location // ""' < ${payload})
 customFieldValue=$(jq -r '.params.custom_field_value // ""' < ${payload})
 customFieldValueFromFile=$(jq -r '.params.custom_field_value_from_file // ""' < ${payload})
+commentBody=$(jq -r '.params.comment_body // ""' < ${payload})
 
 if [ ! -z "$issuesList" ]; then
   issues=$issuesList
@@ -54,6 +55,7 @@ pushd /tmp/build/put
         --customFieldType="$customFieldType" \
         --customFieldValue="$customFieldValue" \
         --customFieldValueFromFile="$customFieldValueFromFile" \
+        --commentBody="$commentBody"
         --loggingLevel="$loggingLevel" \
         $flags
 

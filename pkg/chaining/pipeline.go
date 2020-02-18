@@ -74,7 +74,7 @@ func (p *Pipeline) singleExecution(params *configuration.JiraAPIResourceParamete
 
 		if err != nil {
 			if helpers.IsBoolPtrTrue(params.Flags.KeepGoingOnError) {
-				log.Logger.Warning("Error detected but '--keepGoing' was specified.")
+				log.Logger.Warning("Error detected but '--keepGoing' was specified")
 				log.Logger.Warning(err.Error())
 				break
 			} else {

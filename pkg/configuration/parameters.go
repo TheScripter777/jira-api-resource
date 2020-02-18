@@ -42,6 +42,7 @@ const (
 	loggingLevel             = "loggingLevel"
 	closedStatusName         = "closedStatusName"
 	transitionName           = "transitionName"
+	commentBody              = "commentBody"
 
 	// Flags
 	forceOnParent    = "forceOnParent"
@@ -75,6 +76,8 @@ const (
 	closedStatusNameDescription         = "The written value of the closed status as displayed in the Jira issue. Used for openness check."
 	transitionNameDefault               = "Reopened"
 	transitionNameDescription           = "The name (as written in Jira) of the desired nwe status."
+	commentBodyDefault                  = ""
+	commentBodyDescription              = "The text body of the comment that will be posted to specified issue(s)."
 	_                                   = /*forceOnParentDefault*/ false
 	forceOnParentDescription            = "Flag that indicates if we want to force all operation on the parent issue (if there's one)"
 	_                                   = /*forceOpenDefault*/ false
@@ -99,6 +102,7 @@ type JiraAPIResourceParameters struct {
 
 	ReadIssueParam       JiraApiResourceParametersReadIssue
 	EditCustomFieldParam JiraApiResourceParametersEditCustomField
+	AddComment           JiraApiResourceParametersAddComment
 
 	ActiveIssue string         // The **SINGLE** issue that the resource is currently processing
 	Meta        MetaParameters //
@@ -127,6 +131,10 @@ type JiraApiResourceParametersEditCustomField struct {
 	CustomFieldValueFromFile *string
 }
 
+type JiraApiResourceParametersAddComment struct {
+	CommentBody *string
+}
+
 // Method that initialize every parameters/flags and makes the actual call the flag.Parse(). A few custom operation are
 // performed afterward such as initialization and validation.
 func (param *JiraAPIResourceParameters) Parse() {
@@ -144,6 +152,7 @@ func (param *JiraAPIResourceParameters) Parse() {
 	param.EditCustomFieldParam.CustomFieldType = flag.String(customFieldType, customFieldTypeDefault, customFieldTypeDescription)
 	param.EditCustomFieldParam.CustomFieldValue = flag.String(customFieldValueAsIs, customFieldValueAsIsDefault, customFieldValueAsIsDescription)
 	param.EditCustomFieldParam.CustomFieldValueFromFile = flag.String(customFieldValueFromFile, customFieldValueFromFileDefault, customFieldValueFromFileDescription)
+	param.AddComment.CommentBody = flag.String(commentBody, commentBodyDefault, commentBodyDescription)
 
 	param.LoggingLevel = flag.String(loggingLevel, loggingLevelDefault, loggingLevelDescription)
 	param.ClosedStatusName = flag.String(closedStatusName, closedStatusNameDefault, closedStatusNameDescription)
@@ -215,6 +224,8 @@ func (param *JiraAPIResourceParameters) validate() {
 				param.Meta.valid = false
 				param.Meta.Msg = fmt.Sprintf("Missing destination")
 			}
+		case AddComment:
+			fallthrough
 		case ReadIssue:
 			fallthrough
 		default:
