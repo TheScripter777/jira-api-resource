@@ -1,9 +1,9 @@
 package helpers
 
 func IsStringPtrNilOrEmtpy(ptr *string) bool {
-	if ptr == nil || *ptr == "" {
-		return true
-	}
+	return ptr == nil || *ptr == ""
+}
 
-	return false
+func IsBoolPtrTrue(ptr *bool) bool {
+	return ptr != nil && *ptr == true
 }

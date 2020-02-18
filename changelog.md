@@ -5,6 +5,14 @@ The format of this file is based on [Keep a Changelog](https://keepachangelog.co
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] 
+### Added
+- 'forceOpen' functionality now implemented
+- Added the 'keepGoing' flag which ignores error on 1 issues and exit current step list. This allows the pipeline to continue to the next issue, if any.
+### Changed
+- The 'out' asset now recognizes both an explicitly defined list and a path to a directory containing 'issues' files.
+- Partial refactored the logic used for 'cross-steps' values
+- What was used before to find out if an issue had a parent is now used to fetch various data prior to executing the pipeline.
+- Error management now uses a custom type instead of built-in 'error' type. This allows for more information to be transmitted.
 
 ## [1.1.3] - 2020-02-12
 ### Added

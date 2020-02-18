@@ -2,7 +2,7 @@
 
 <sub>Some section needs to be updated</sub>
 
-Version: 1.1.2
+Version: 1.1.3
 
 | Build status | Scrutinizer |
 |--------------|-------------|
@@ -11,28 +11,27 @@ Version: 1.1.2
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/e6ea2afc744d4fbf8bffc65e794155f4)](https://www.codacy.com/app/TurnsCoffeeIntoScripts/jira-api-issue-resource?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=TurnsCoffeeIntoScripts/jira-api-issue-resource&amp;utm_campaign=Badge_Grade)   
 <sub>Project certification on default branch (master)</sub>
 
-This [Concourse](https://concourse-ci.org/) resource allows a pipeline to interface with a Jira REST API in order to manage (create/update/delete) tickets.
+This [Concourse](https://concourse-ci.org/) resource allows a pipeline to interface with a Jira REST API in order to manage (create/update/delete) issues.
+It is intended to be as dynamic and generic as possible to allow a vast array of possible uses. In this regard it is important
+to know that jira-api-issue-resource benefits greatly from being used with [glif](https://github.com/TurnsCoffeeIntoScripts/git-log-issue-finder).
 
 # Table of content
 1. [Resource Type Configuration](#Resource-Type-Configuration)
-2. [Source Configuration](#Source-Configuration)
+2. [Source Configuration](#Source-Configuration) 
     1. [Required Parameters Definition](#Required-Parameters-Definition)
-    2. [Action Parameters Definition](#Action-Parameters-Definition)
-        1. [Add Comment](#Comment)
-        2. [Add Label](#Add-Label)
-    3. [Issue definition methods](#Issue-definition-methods)
-        1. [Single Issue](#Single-issue)
-        2. [List of issues](#List-of-issues)
-        3. [Custom Script](#Custom-script)
+    2. [Optionnal Parameters Definition](#Optionnal_Parameters_Definition)
+    3. [Optionnal Flags Definition](#Optionnal_Flags_Definition) 
+    4. [Context usage](#Context_Usage)
 3. [Behavior](#Behavior)
     1. [Check](#Check)
     2. [In](#In)
     3. [Out](#Out)
+4. [Contributing](#Contributing)
 
 ## Resource Type Configuration
-``` yml
+``` yaml
 resource_types:
-    - name: jira-api-issue-resource
+    - name: jira-api-issue
       type: docker-image
       source:
           repository: turnscoffeeintoscripts/jira-api-issue-resource
@@ -40,129 +39,128 @@ resource_types:
 ```
 
 ## Source Configuration
-``` yml
+``` yaml
 resources:
     - name: jira
-      type: jira-api-issue-resource
+      type: jira-api-issue
       source:
           url: https://...
           username: XXXX
           password: ((password-in-vault)
-          
-          # Use only one of the next three parameters
-          issue-id: ABC-123
-          issue-list: ABC-123,ABC-234,ABC-345
-          issue-script: /path/to/script/script.sh       
+          context: <SEE_CONTEXT_USAGE>       
 ```
 
-Firstly, here's a list of all required parameters:
+Firstly, here's a list of all required and optionnal parameters followed by a list of the optionnal flags:
 
 ### Required Parameters Definition
 
-| Parameter      | Description                                                                       |
-|----------------|-----------------------------------------------------------------------------------|
-| `url`          | The URL of the JIRA rest API to be used                                           |
-| `user`         | The username of the account used to connect with the Jira rest API                |
-| `password`     | The password of the specified user                                                |
+| Parameter      | Default Value | Description                                                        |
+|----------------|---------------|--------------------------------------------------------------------|
+| `url`          | nil           | The base URL of the Jira API                                       |
+| `user`         | nil           | The username used to connect to the Jira API                       |
+| `password`     | nil           | The password needed to connect to the Jira API                     |
+| `context`      | nil           | The context of execution (see 'Context Usage bellow')              |
 
-Next, use **one and only one** of the following parameters.
+### Optionnal Parameters Definition
+| Parameter             | Default Value | Description                                                       |
+|-----------------------|---------------|-------------------------------------------------------------------|
+| `loggingLevel`        | `INFO`        |                                                                   |
+| `transitionName`      | `Reopened`    |                                                                   |
+| `closedStatusName`    | `Closed`      |                                                                   |
 
-| Parameter      | Description                                                                       |
-|----------------|-----------------------------------------------------------------------------------|
-| `issue-id`     | The unique identifier of the Jira issue                                           |
-| `issue-list`   | A list of all the Jira issue's unique identifier                                  |
-| `issue-script` | Filename containing a script that must returns a single or multiple Jira issue(s) |
+### Optionnal Flags Definition
+| Flag              | Description                                                                       |
+|-------------------|-----------------------------------------------------------------------------------|
+| `forceOnParent`   |                                                                                   |
+| `forceOpen`       |                                                                                   |
 
-### Action Parameters Definition
-Now to specify the action to take specify (set to 'true') one and only one of the actions listed bellow:
+### Context Usage
+Here's the list of the available contexts that can be used. Each context will directly influence what operations will be
+performed by the resource. 
+1. [ReadIssue](#ReadIssue)
+2. [ReadStatus](#ReadStatus)
+3. [EditCustomField](#EditCustomField)
 
-| Action (flags)     | Description               |
-|--------------------|---------------------------|
-| `comment`          | Add a comment on a ticket |
-| `add-label`        | Add a label on a ticket   |
+#### ReadIssue
+Documentation coming soon...
 
-#### Comment
-The configuration to use to add a comment to the specified ticket(s) is `comment`.
+#### ReadStatus
+Documentation coming soon...
 
-**Example**:
-``` yml
+#### EditCustomField
+**This context allows the resource to be used in 'put' steps**. It also allows the edition of any free text element in a
+Jira issue. These elements are referred to as 'custom fields'. 
+
+Here's a simple example of the resource's configuration:
+``` yaml
 resources:
-    - name: jira
-      type: jira-api-issue-resource
-      source:
-          url: https://...
-          username: XXXX
-          password: ((password-in-vault)
-          
-          issue-list: ABC-123,ABC-234,ABC-345
-          
-          # The action to take on specified issue(s)
-          comment: true
-          body: This a comment made from a concourse resource
+  - name: jira-build-number
+    type: jira-api-issue
+    source:
+      url: https://jira....
+      username: username1
+      password: ((password-in-vault))
+      context: EditCustomField
+      custom_field_name: "Build Number"
+      custom_field_type: "string"
+```
+As can be seen in this configuration neither the field value or the issue(s) are specified. Since this resource is meant
+to be as dynamic as possible those values will be provided in the put step. The first example is done without the use of
+glif. Therefore the issue(s) are directly specified in the parameters. The parameter `custom_field_value` is also used
+meaning the value that will be put in the issue(s) is hardcoded in the put step configuration. 
+``` yaml
+jobs:
+  - name: add-build-number
+    serial: true
+    public: false
+    plan:
+      ...
+      - put: jira-build-number
+        params:
+          issues: "ABC-123 XYZ-1649 TEST-456"
+          custom_field_value: "1.0.0"
 ```
 
-#### Add Label
-The configuration to use to add a label to the specified ticket(s) is `add-label`.
-
-**Example**:
-```yml
-resources:
-    - name: jira
-      type: jira-api-issue-resource
-      source:
-          url: https://...
-          username: XXXX
-          password: ((password-in-vault)
-          
-          issue-list: ABC-123,ABC-234,ABC-345
-          
-          # The action to take on specified issue(s)
-          add-label: true
-          label: LABEL_XYZ
-    
+Next is a more dynamic (and realistic) example. Glif is used meaning we have a dynamic list of issues. The custom value
+is also specified via a file that a previous step will provide; perfect if you're using the [semver](https://github.com/concourse/semver-resource)
+concourse resource. 
+``` yaml
+jobs:
+  - name: add-build-number
+    serial: true
+    public: false
+    plan:
+      ...
+      - get: version-rc # semver resource
+      - task: glif
+        file: path/to/glif/task/file.yml
+      - put: jira-build-number
+        params:
+          issue_file_location: path/to/directory/
+          custom_field_value_from_file: path/to/file/with/value.txt
+ 
 ```
+<sub>You may want to read [glif](https://github.com/TurnsCoffeeIntoScripts/git-log-issue-finder) documentation to properly
+setup the `glif` task in this example</sub>
 
-### Issue definition methods
-With this resource, there are 3 possible ways of defining which tickets will be accessed or modified.
+Lets explain the two paramters `issue_file_location` and `custom_field_value_from_file`. 
 
-#### Single issue
-A single issue is specified by adding the parameter `issue-id` in the source configuration and assigning the ticket number/id which will usually follow this format: `([a-zA-Z]+)-([0-9]+)`
-
-#### List of issues
-A list of issue is specified by adding the parameter `issue-list` in the source configuration and assigning one or multiple ticket numbers sperated by `','`.  
-The format for each ticket number will follow this format: `([a-zA-Z]+)-([0-9]+)`
-
-**Example:**
-``` yml
-    - name: jira
-      type: jira-api-issue-resource
-      source:
-          url: https://...
-          username: XXXX
-          password: ((password-in-vault)
-          
-          issue-list: ABC-123,ABC-23,XYZ-9999
-```
-
-#### Custom Script
-Using this resource, it's also possible to specify a script instead of hard-coded values for the tickets numbers. The only requirement is that the script returns a comma-separated list of ticket numbers.
-
-**Example:**
-``` yml
-    - name: jira
-      type: jira-api-issue-resource
-      source:
-          url: https://...
-          username: XXXX
-          password: ((password-in-vault)
-          
-          issue-script: moduleSCM/findJiraTicket.sh
-```
+The first parameter, `issue_file_location`, is the path to the directory in which there is one or more file (*.txt)
+containing the list of issues.  
+The second parameter, `custom_field_value_from_file`, is the path to the file containing the value to edit in said issue(s).
 
 ## Behavior
 ### Check
-Coming soon...
+**NOOP**: does nothing.
 ### In
-Coming soon...
+**NOOP**: does nothing. There are feature that will be coming soon.
 ### Out
-Coming soon...
+Edit the issue(s) specified in the step parameters. Depending on the context defined in the resource various fields or
+parameters will be updated. For more specific see the [context usage](#Context_Usage) section.
+
+## Contributing
+Anybody is welcome to contribute to this resource. You should checkout the develop `branch` and create your feature branch
+from there. Only pull-requests made to the `develop` branch will be looked at and eventually accepted. Once `develop` is
+stable and contains the desired feature a merge to `master` will be made and following that a release (tag, docker image).
+
+For any questions or inquiries you can send an email at: [turns.coffee.into.scripts@gmail.com](mailto:turns.coffee.into.scripts@gmail.com) 

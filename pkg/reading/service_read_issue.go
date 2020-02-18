@@ -17,7 +17,6 @@ type ServiceReadIssue struct {
 	SkipCustomKeyRetrieval bool
 
 	issueId     string
-	parentKey   string
 	fieldKey    string
 	fieldName   string
 	statusName  string
@@ -35,7 +34,6 @@ func (s *ServiceReadIssue) InitJiraAPI(params configuration.JiraAPIResourceParam
 func (s *ServiceReadIssue) GetResults() map[string]string {
 	var m = make(map[string]string)
 	m[helpers.ReadingFieldKey] = s.fieldKey
-	m[helpers.ParentIssueKey] = s.parentKey
 	return m
 }
 
@@ -67,11 +65,6 @@ func (s *ServiceReadIssue) PostAPICall(result interface{}) error {
 			}
 		}
 
-		// Find parent key if current one isn't "top-level"
-		if issue.Fields.Parent != nil {
-			s.parentKey = issue.Fields.Parent.Key
-		}
-
 		// Find the id of the status of the current Jira issue
 		if issue.Fields.Status != nil {
 			s.statusName = issue.Fields.Status.Name
@@ -84,6 +77,7 @@ func (s *ServiceReadIssue) PostAPICall(result interface{}) error {
 func (s *ServiceReadIssue) Name() string {
 	return "ServiceReadIssue"
 }
+
 func (s *ServiceReadIssue) ExecuteAsLastStep(ctx configuration.Context) error {
 	if file, err := result.CreateDestination(s.destination); err != nil {
 		return err

@@ -1,6 +1,7 @@
 package chaining
 
 import (
+	"errors"
 	"fmt"
 	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/configuration"
 	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/helpers"
@@ -50,40 +51,78 @@ func (p *Pipeline) Execute(params *configuration.JiraAPIResourceParameters) erro
 	}
 
 	params.ActiveIssue = params.IssueList[0]
+	log.Logger.Debug("Executing pipeline for issue ", params.ActiveIssue)
 	return p.singleExecution(params)
 }
 
 func (p *Pipeline) singleExecution(params *configuration.JiraAPIResourceParameters) error {
+	forcedOpen := false
+
+	if err := p.loadIssueData(params); err != nil {
+		return err
+	}
+
 	for index := range p.steps {
-		if params.Flags.ForceOnParent != nil && *params.Flags.ForceOnParent {
-			log.Logger.Debug("Executing pre-step to validate parent status")
-			tempService := &reading.ServiceReadIssue{}
-			// Manually force this flag 'SkipCustomKeyRetrieval'.
-			// This is done so that when reading the issue from the API no attempt at extracting
-			// the custom field ID will be made preventing an error.
-			tempService.SkipCustomKeyRetrieval = true
-			tempErr := service.Execute(tempService, *params, false)
-			if tempErr != nil {
-				return tempErr
-			}
-
-			if tempService.GetResults()[helpers.ParentIssueKey] != "" {
-				log.Logger.Debug(fmt.Sprintf("Setting parent key: %s\n", tempService.GetResults()[helpers.ParentIssueKey]))
-				params.ActiveIssue = tempService.GetResults()[helpers.ParentIssueKey]
-			}
-		}
-
 		log.Logger.Debug("Executing step (", index+1, "/", p.length, ")", p.steps[index].Name)
 		err := p.steps[index].Execute(p.csValues, p.steps[index].Last)
 
 		if err != nil {
-			return err
+			if helpers.IsBoolPtrTrue(params.Flags.KeepGoingOnError) {
+				log.Logger.Warning("Error detected but '--keepGoing' was specified.")
+				log.Logger.Warning(err.Error())
+				break
+			} else {
+				return err
+			}
 		}
 
 		if index < p.length-1 {
 			ns := &p.steps[index+1]
 			p.csValues = p.steps[index].PrepareNextStep(ns, p.csValues)
 		}
+
+		if p.csValues.mapping[helpers.IssueForceOpenKey] != "" {
+			if forcedOpen = PerformForceOpen(params); forcedOpen {
+				p.csValues.mapping[helpers.IssueForceOpenKey] = ""
+			}
+		}
+	}
+
+	if forcedOpen {
+		return PerformClose(params)
+	}
+
+	return nil
+}
+
+func (p *Pipeline) loadIssueData(params *configuration.JiraAPIResourceParameters) error {
+	srvFetchData := &reading.ServiceFetchIssueData{}
+	values := CrossStepsValues{}
+	values.mapping = make(map[string]string, 0)
+
+	if err := service.Execute(srvFetchData, *params, false); err != nil {
+		return err
+	}
+
+	results := srvFetchData.GetResults()
+
+	if helpers.IsBoolPtrTrue(params.Flags.ForceOnParent) {
+		if results[helpers.ParentIssueKey] != "" {
+			log.Logger.Debug(fmt.Sprintf("Setting parent key: %s", results[helpers.ParentIssueKey]))
+			params.ActiveIssue = results[helpers.ParentIssueKey]
+		}
+	}
+
+	if results[helpers.StatusNameKey] == *params.ClosedStatusName {
+		if helpers.IsBoolPtrTrue(params.Flags.ForceOpen) {
+			values.mapping[helpers.IssueForceOpenKey] = *params.TransitionName
+		} else {
+			return errors.New(fmt.Sprintf("issue %s is in the '%s' status and the '--forceOpen' flag was not specified", params.ActiveIssue, *params.ClosedStatusName))
+		}
+	}
+
+	if len(values.mapping) > 0 {
+		p.csValues.mapping = helpers.CopyMapString(values.mapping, p.csValues.mapping, true)
 	}
 
 	return nil

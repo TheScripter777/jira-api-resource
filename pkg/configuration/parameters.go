@@ -40,10 +40,13 @@ const (
 	customFieldValueAsIs     = "customFieldValue"
 	customFieldValueFromFile = "customFieldValueFromFile"
 	loggingLevel             = "loggingLevel"
+	closedStatusName         = "closedStatusName"
+	transitionName           = "transitionName"
 
 	// Flags
-	forceOnParent = "forceOnParent"
-	forceOpen     = "forceOpen"
+	forceOnParent    = "forceOnParent"
+	forceOpen        = "forceOpen"
+	keepGoingOnError = "keepGoing"
 
 	// Default values and descriptions for both paramaters and flags
 	jiraAPIURLDefault                   = ""
@@ -68,23 +71,31 @@ const (
 	customFieldValueFromFileDescription = "The value of the field, stored in a file, that will be updated (in case of update workflow)"
 	loggingLevelDefault                 = "INFO"
 	loggingLevelDescription             = "The level of the loggers of the application {'ALL', 'DEBUG', 'ERROR', 'INFO', 'WARN', 'OFF'}"
+	closedStatusNameDefault             = "Closed"
+	closedStatusNameDescription         = "The written value of the closed status as displayed in the Jira issue. Used for openness check."
+	transitionNameDefault               = "Reopened"
+	transitionNameDescription           = "The name (as written in Jira) of the desired nwe status."
 	_                                   = /*forceOnParentDefault*/ false
 	forceOnParentDescription            = "Flag that indicates if we want to force all operation on the parent issue (if there's one)"
 	_                                   = /*forceOpenDefault*/ false
 	forceOpenDescription                = "Flag that will, if the issue if closed, forcefully open it, apply the changes and then close it back"
+	_                                   = /*keepGoingOnErrorDefault*/ false
+	keepGoingOnErrorDescription         = "Flag that makes the pipeline continue even if an error occurs on a specific issue."
 )
 
 // JiraAPIResourceParameters is a struct that holds every possible parameters/flags known by the application.
 // They are all parsed via the flag.Parse() method of the Go flags api. The struct also contains the meta-parameters
 // (see meta-parametes.go).
 type JiraAPIResourceParameters struct {
-	JiraAPIUrl   *string
-	Username     *string
-	Password     *string
-	Destination  *string
-	Context      Context
-	IssueList    []string
-	LoggingLevel *string
+	JiraAPIUrl       *string
+	Username         *string
+	Password         *string
+	Destination      *string
+	Context          Context
+	IssueList        []string
+	LoggingLevel     *string
+	ClosedStatusName *string
+	TransitionName   *string
 
 	ReadIssueParam       JiraApiResourceParametersReadIssue
 	EditCustomFieldParam JiraApiResourceParametersEditCustomField
@@ -98,8 +109,9 @@ type JiraAPIResourceParameters struct {
 // That being said the values in this struct are still parsed via the Go flags api. They've been put 'aside' for clariry
 // purposes.
 type JiraAPIResourceFlags struct {
-	ForceOnParent *bool
-	ForceOpen     *bool
+	ForceOnParent    *bool
+	ForceOpen        *bool
+	KeepGoingOnError *bool
 }
 
 type JiraApiResourceParametersReadIssue struct {
@@ -132,11 +144,15 @@ func (param *JiraAPIResourceParameters) Parse() {
 	param.EditCustomFieldParam.CustomFieldType = flag.String(customFieldType, customFieldTypeDefault, customFieldTypeDescription)
 	param.EditCustomFieldParam.CustomFieldValue = flag.String(customFieldValueAsIs, customFieldValueAsIsDefault, customFieldValueAsIsDescription)
 	param.EditCustomFieldParam.CustomFieldValueFromFile = flag.String(customFieldValueFromFile, customFieldValueFromFileDefault, customFieldValueFromFileDescription)
+
 	param.LoggingLevel = flag.String(loggingLevel, loggingLevelDefault, loggingLevelDescription)
+	param.ClosedStatusName = flag.String(closedStatusName, closedStatusNameDefault, closedStatusNameDescription)
+	param.TransitionName = flag.String(transitionName, transitionNameDefault, transitionNameDescription)
 
 	// Parsing flags
 	param.Flags.ForceOnParent = flag.Bool(forceOnParent, false, forceOnParentDescription)
 	param.Flags.ForceOpen = flag.Bool(forceOpen, false, forceOpenDescription)
+	param.Flags.KeepGoingOnError = flag.Bool(keepGoingOnError, false, keepGoingOnErrorDescription)
 
 	if !param.Meta.parsed {
 		flag.Parse()
@@ -166,6 +182,9 @@ func (param *JiraAPIResourceParameters) validate() {
 		//   - A nil or empty project key
 		// All of those need to cause an invalid state
 		param.Meta.valid = false
+	} else if helpers.IsBoolPtrTrue(param.Flags.ForceOpen) && helpers.IsStringPtrNilOrEmtpy(param.TransitionName) {
+		param.Meta.valid = false
+		param.Meta.Msg = fmt.Sprintf("'%s' flag was specified yet the '%s' parameter was not. This is an invalid configuration.", forceOpen, transitionName)
 	}
 
 	auth.Username = *param.Username
