@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Implemented the 'AddComment' context
 
+## [1.3.0] - 2020-02-18
+### Added
+- Implemented the 'AddComment' context
+
 ## [1.2.0] - 2020-02-18
 ### Added
 - 'forceOpen' functionality now implemented
