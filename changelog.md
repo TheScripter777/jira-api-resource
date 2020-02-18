@@ -19,6 +19,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 'forceOpen' flag in the parameters object (not yet used but recognized)
 - Internal mechanic to prevent the custom field ID extraction when reading an issue for its parent status
 
+## [1.1.3] - 2020-02-12
+### Added
+- 'forceOpen' flag in the parameters object (not yet used but recognized)
+- Internal mechanic to prevent the custom field ID extraction when reading an issue for its parent status
+
 ## [1.1.2] - 2020-02-11
 ### Changed
 - Changed the whitespace removal for a simple field extraction instead
