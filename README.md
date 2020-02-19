@@ -19,9 +19,9 @@ to know that jira-api-issue-resource benefits greatly from being used with [glif
 1. [Resource Type Configuration](#Resource-Type-Configuration)
 2. [Source Configuration](#Source-Configuration) 
     1. [Required Parameters Definition](#Required-Parameters-Definition)
-    2. [Optionnal Parameters Definition](#Optionnal_Parameters_Definition)
-    3. [Optionnal Flags Definition](#Optionnal_Flags_Definition) 
-    4. [Context usage](#Context_Usage)
+    2. [Optionnal Parameters Definition](#Optionnal-Parameters-Definition)
+    3. [Optionnal Flags Definition](#Optionnal-Flags-Definition) 
+    4. [Context usage](#Context-Usage)
 3. [Behavior](#Behavior)
     1. [Check](#Check)
     2. [In](#In)
@@ -80,6 +80,7 @@ performed by the resource.
 1. [ReadIssue](#ReadIssue)
 2. [ReadStatus](#ReadStatus)
 3. [EditCustomField](#EditCustomField)
+4. [AddComment](#AddComment)
 
 #### ReadIssue
 Documentation coming soon...
@@ -149,6 +150,35 @@ The first parameter, `issue_file_location`, is the path to the directory in whic
 containing the list of issues.  
 The second parameter, `custom_field_value_from_file`, is the path to the file containing the value to edit in said issue(s).
 
+#### AddComment
+**This context allows the resource to be used in 'put' steps**. It simply adds a comment to the specified issue(s).
+
+Here's a simple example of the resource's configuration:
+``` yaml
+resources:
+  - name: jira-comment
+    type: jira-api-issue
+    source:
+      url: https://jira....
+      username: username1
+      password: ((password-in-vault))
+      context: AddComment
+```
+The actual body of the comment (the text) is set in the 'params' section of the step:
+``` yaml
+jobs:
+  - name: put-jira-comment
+    serial: true
+    public: false
+    plan:
+      ...
+      - put: jira-comment
+        params:
+          issues: "ABC-123 XYZ-1649 TEST-456"
+          comment_body: "Comment made from Concourse"
+```
+This step will post a the comment `Comment made from Concourse` to each of the following issues: ABC-123, XYZ-1649 and TEST-456. 
+
 ## Behavior
 ### Check
 **NOOP**: does nothing.
@@ -156,7 +186,7 @@ The second parameter, `custom_field_value_from_file`, is the path to the file co
 **NOOP**: does nothing. There are feature that will be coming soon.
 ### Out
 Edit the issue(s) specified in the step parameters. Depending on the context defined in the resource various fields or
-parameters will be updated. For more specific see the [context usage](#Context_Usage) section.
+parameters will be updated. For more specific see the [context usage](#Context-Usage) section.
 
 ## Contributing
 Anybody is welcome to contribute to this resource. You should checkout the develop `branch` and create your feature branch

@@ -55,7 +55,7 @@ pushd /tmp/build/put
         --customFieldType="$customFieldType" \
         --customFieldValue="$customFieldValue" \
         --customFieldValueFromFile="$customFieldValueFromFile" \
-        --commentBody="$commentBody"
+        --commentBody="$commentBody" \
         --loggingLevel="$loggingLevel" \
         $flags
 

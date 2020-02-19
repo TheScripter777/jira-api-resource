@@ -168,8 +168,12 @@ func (param *JiraAPIResourceParameters) Parse() {
 		param.Meta.parsed = flag.Parsed()
 	}
 
-	param.initializeContext(contextString)
-	param.initializeIssueList(issueListString)
+	param.InitializeAndValidatePostParse(contextString, issueListString)
+}
+
+func (param *JiraAPIResourceParameters) InitializeAndValidatePostParse(context, issueList *string) {
+	param.initializeContext(context)
+	param.initializeIssueList(issueList)
 	param.initLogger()
 	param.validate()
 }
