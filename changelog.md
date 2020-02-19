@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Updated test in 'configuration' package
 
+## [1.3.1] - 2020-02-19
+### Changed
+- Updated test in 'configuration' package
+
 ## [1.3.0] - 2020-02-18
 ### Added
 - Implemented the 'AddComment' context
