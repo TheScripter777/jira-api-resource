@@ -59,28 +59,7 @@ pushd /tmp/build/put
         --loggingLevel="$loggingLevel" \
         $flags
 
-    case $context in
-        EditCustomField) # ------------------------------- EDIT CUSTOM FIELD --
-        if [[ ! -z $customFieldValue ]]; then
-            version_ref=$customFieldValue
-        elif [[ ! -z $customFieldValueFromFile ]]; then
-            version_ref=$(<$1/${customFieldValueFromFile})
-        else
-            version_ref="Unspecified"
-        fi
-        ;;
-        *) # ----------------------------------------------- UNKNOWN CONTEXT --
-        version_ref="Unspecified"
-        ;;
-    esac
-
-    jq -n "{
-        version: {ref: \"$version_ref\"}
-        metadata: [
-            {\"name\": \"issues(s)\", \"value\": $issues},
-            {\"name\": \"context\", \"value\": $context}
-        ]
-    }" >&3
+    jq -n "{\"version\": {\"ref\": \".\"}, \"metadata\": [{\"name\": \"issues(s)\", \"value\": \"$issues\"},{\"name\": \"context\", \"value\": \"$context\"}]}" >&3
 
 popd
 

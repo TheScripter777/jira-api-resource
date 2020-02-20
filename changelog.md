@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] 
 ### Changed
-- Version reference in out script
+- How the json is output via the 'jq' command in the out script
 
 ## [1.3.4] - 2020-02-20
 ### Changed
