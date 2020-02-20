@@ -5,8 +5,12 @@ The format of this file is based on [Keep a Changelog](https://keepachangelog.co
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] 
+### Changed
+- Version reference in out script
 
 ## [1.3.2] - 2020-02-20
+### Changed
+- Version reference in out script
 
 ## [1.3.1] - 2020-02-19
 ### Changed
