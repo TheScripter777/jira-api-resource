@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Version reference in out script
 
+## [1.3.3] - 2020-02-20
+### Changed
+- Version reference in out script
+
 ## [1.3.2] - 2020-02-20
 ### Changed
 - Version reference in out script
