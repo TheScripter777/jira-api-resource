@@ -75,7 +75,7 @@ pushd /tmp/build/put
     esac
 
     jq -n "{
-        version: {ref: $version_ref}
+        version: {ref: \"$version_ref\"}
         metadata: [
             {\"name\": \"issues(s)\", \"value\": $issues},
             {\"name\": \"context\", \"value\": $context}
