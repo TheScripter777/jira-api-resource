@@ -66,11 +66,11 @@ pushd /tmp/build/put
         elif [[ ! -z $customFieldValueFromFile ]]; then
             version_ref=$(<$1/${customFieldValueFromFile})
         else
-            version_ref="N/A"
+            version_ref="Unspecified"
         fi
         ;;
         *) # ----------------------------------------------- UNKNOWN CONTEXT --
-        version_ref="N/A"
+        version_ref="Unspecified"
         ;;
     esac
 
