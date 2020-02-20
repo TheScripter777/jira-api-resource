@@ -62,15 +62,15 @@ pushd /tmp/build/put
     case $context in
         EditCustomField) # ------------------------------- EDIT CUSTOM FIELD --
         if [[ ! -z $customFieldValue ]]; then
-            version_ref==$customFieldValue
+            version_ref=$customFieldValue
         elif [[ ! -z $customFieldValueFromFile ]]; then
-            version_ref==$(<$1/${customFieldValueFromFile})
+            version_ref=$(<$1/${customFieldValueFromFile})
         else
-            version_ref=="N/A"
+            version_ref="N/A"
         fi
         ;;
         *) # ----------------------------------------------- UNKNOWN CONTEXT --
-        version_ref=="N/A"
+        version_ref="N/A"
         ;;
     esac
 
