@@ -46,6 +46,6 @@ func (s *ServiceUnknown) Name() string {
 	return "ServiceUnknown"
 }
 
-func (s *ServiceUnknown) ExecuteAsLastStep(ctx configuration.Context) error {
+func (s *ServiceUnknown) ExecuteAsLastStep(params configuration.JiraAPIResourceParameters) error {
 	return nil
 }

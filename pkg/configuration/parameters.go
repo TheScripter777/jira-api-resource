@@ -135,9 +135,8 @@ type JiraApiResourceParametersAddComment struct {
 	CommentBody *string
 }
 
-// Method that initialize every parameters/flags and makes the actual call the flag.Parse(). A few custom operation are
-// performed afterward such as initialization and validation.
-func (param *JiraAPIResourceParameters) Parse() {
+// Method that initialize every parameters/flags and makes the actual call the flag.Parse().
+func (param *JiraAPIResourceParameters) Parse() (*string, *string) {
 	var contextString *string
 	var issueListString *string
 
@@ -168,9 +167,10 @@ func (param *JiraAPIResourceParameters) Parse() {
 		param.Meta.parsed = flag.Parsed()
 	}
 
-	param.InitializeAndValidatePostParse(contextString, issueListString)
+	return contextString, issueListString
 }
 
+// TODO: ... A few custom operation are performed afterward such as initialization and validation.
 func (param *JiraAPIResourceParameters) InitializeAndValidatePostParse(context, issueList *string) {
 	param.initializeContext(context)
 	param.initializeIssueList(issueList)

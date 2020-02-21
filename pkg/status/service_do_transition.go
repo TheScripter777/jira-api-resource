@@ -75,7 +75,7 @@ func (s *ServiceDoTransition) Name() string {
 	return "ServiceDoTransition"
 }
 
-func (s *ServiceDoTransition) ExecuteAsLastStep(ctx configuration.Context) error {
+func (s *ServiceDoTransition) ExecuteAsLastStep(params configuration.JiraAPIResourceParameters) error {
 	return nil
 }
 

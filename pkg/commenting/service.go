@@ -62,6 +62,6 @@ func (s *ServiceAddComment) Name() string {
 	return "ServiceAddComment"
 }
 
-func (s *ServiceAddComment) ExecuteAsLastStep(ctx configuration.Context) error {
+func (s *ServiceAddComment) ExecuteAsLastStep(params configuration.JiraAPIResourceParameters) error {
 	return nil
 }

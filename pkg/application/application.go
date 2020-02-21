@@ -47,7 +47,8 @@ func (app *JiraAPIResourceApp) Run() error {
 
 func (app *JiraAPIResourceApp) initFlagsAndParameters() error {
 	app.params = configuration.JiraAPIResourceParameters{}
-	app.params.Parse()
+	ctx, iss := app.params.Parse()
+	app.params.InitializeAndValidatePostParse(ctx, iss)
 	if !app.params.Meta.AllMandatoryValuesPresent() {
 		flag.Usage()
 		return errors.New("missing mandatory flags/parameters")

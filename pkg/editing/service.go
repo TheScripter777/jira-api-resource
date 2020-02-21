@@ -89,7 +89,7 @@ func (s *ServiceEditCustomField) Name() string {
 	return "ServiceEditCustomField"
 }
 
-func (s *ServiceEditCustomField) ExecuteAsLastStep(ctx configuration.Context) error {
+func (s *ServiceEditCustomField) ExecuteAsLastStep(params configuration.JiraAPIResourceParameters) error {
 	return nil
 }
 

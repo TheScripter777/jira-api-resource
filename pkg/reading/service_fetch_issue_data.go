@@ -63,6 +63,6 @@ func (s *ServiceFetchIssueData) Name() string {
 	return "ServiceFetchIssueData"
 }
 
-func (s *ServiceFetchIssueData) ExecuteAsLastStep(ctx configuration.Context) error {
+func (s *ServiceFetchIssueData) ExecuteAsLastStep(params configuration.JiraAPIResourceParameters) error {
 	return nil
 }

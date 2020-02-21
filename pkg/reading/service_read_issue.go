@@ -10,7 +10,6 @@ import (
 	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/result"
 	"github.com/TurnsCoffeeIntoScripts/jira-api-issue-resource/pkg/service"
 	"net/http"
-	"os"
 )
 
 type ServiceReadIssue struct {
@@ -78,23 +77,31 @@ func (s *ServiceReadIssue) Name() string {
 	return "ServiceReadIssue"
 }
 
-func (s *ServiceReadIssue) ExecuteAsLastStep(ctx configuration.Context) error {
+func (s *ServiceReadIssue) ExecuteAsLastStep(params configuration.JiraAPIResourceParameters) error {
 	if file, err := result.CreateDestination(s.destination); err != nil {
 		return err
 	} else {
+		ctx := params.Context
 
 		switch ctx {
+		case configuration.ReadIssue:
+			vi := VersionReadIssueResponse{Issues: params.IssueList}
+			err := json.NewEncoder(file).Encode(InResponseIssue{
+				Issues: vi,
+			})
+
+			if err != nil {
+				return err
+			}
 		case configuration.ReadStatus:
-			vs := VersionStatus{Status: s.statusName}
-			err := json.NewEncoder(os.Stdout).Encode(InResponse{
+			vs := VersionReadStatusResponse{Status: s.statusName}
+			err := json.NewEncoder(file).Encode(InResponseStatus{
 				Version: vs,
 			})
 
 			if err != nil {
 				return err
 			}
-
-			return result.Write(file, s.statusName)
 		}
 	}
 

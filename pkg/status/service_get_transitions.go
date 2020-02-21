@@ -57,6 +57,6 @@ func (s *ServiceGetTransitions) Name() string {
 	return "ServiceGetTransitions"
 }
 
-func (s *ServiceGetTransitions) ExecuteAsLastStep(ctx configuration.Context) error {
+func (s *ServiceGetTransitions) ExecuteAsLastStep(params configuration.JiraAPIResourceParameters) error {
 	return nil
 }

@@ -12,8 +12,6 @@ PATH=$PATH:/opt/resource
 PATH=/usr/local/bin/:$PATH
 TMPDIR=${TMPDIR:-/tmp}
 
-source $(dirname $0)/common
-
 destination=${1}
 
 payload=$(mktemp $TMPDIR/jira-api-issue-resource-request.XXXXXX)
@@ -29,14 +27,25 @@ loggingLevel=$(jq -r '.source.logging_level // ""' < ${payload})
 flags=$(jq -r '.source.flags // ""' < ${payload})
 
 # Reading params configuration
-issuesFileDirectory=$(jq -r '.params.file_location // ""' < ${payload})
-customFieldValue=$(jq -r '.params.custom_field_value // ""' < ${payload})
-customFieldValueFromFile=$(jq -r '.params.custom_field_value_from_file // ""' < ${payload})
+issuesList=$(jq -r '.params.issues // ""' < ${payload})
+issuesFileDirectory=$(jq -r '.params.issue_file_location // ""' < ${payload})
 
-issues=$(<$1/${issuesFileDirectory}/*.txt)
+if [ ! -z "$issuesList" ]; then
+  issues=$issuesList
+elif [ ! -z "$issuesFileDirectory" ]; then
+  issues=$(<$1/${issuesFileDirectory}/*.txt)
+else
+  issues=""
+fi
+
+# In the 'in' asset (so either in a 'get' step or the second part of a 'put' step)
+# A 'read' context is needed. So if it isn't one, default back to 'ReadIssue'
+if [[ "$context" != "ReadStatus" ]] || [[ "$context" != "ReadIssue" ]]; then
+  context="ReadIssue"
+fi
 
 pushd /tmp/build/get
-    resourceDestination=$destination/jira-api-issue-resource.txt
+    resourceDestination=$destination/jira-api-issue-resource.json
 
     jiraApiIssueResource \
         --url="$url" \
@@ -47,4 +56,7 @@ pushd /tmp/build/get
         --issues="$issues" \
         --loggingLevel="$loggingLevel" \
         $flags
+
+    # Print json
+    jq . $resourceDestination >&3
 popd

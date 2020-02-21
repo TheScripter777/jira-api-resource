@@ -49,8 +49,6 @@ func setup(t *testing.T) func(t *testing.T) {
 	require.NoError(t, err, "problem creating fake data")
 
 	tParam.Destination = tParam.Destination + "/"
-	context = "ReadIssue"
-	issueList = "ABC-123 DEF-456"
 
 	fPtr = new(bool)
 	*fPtr = false
@@ -62,17 +60,18 @@ func setup(t *testing.T) func(t *testing.T) {
 	}
 }
 
-func TestPostParse(t *testing.T) {
+func TestPostParse_Validate(t *testing.T) {
 	teardown := setup(t)
 	defer teardown(t)
 
-	t.Run("app parameters VALID and READY from VALID input flags and param", func(t *testing.T) {
-		t.Skip()
+	param := configuration.JiraAPIResourceParameters{}
+	_, _ = param.Parse()
 
+	t.Run("app parameters VALID AND READY from VALID inputs", func(t *testing.T) {
 		// Arrange
-		param := configuration.JiraAPIResourceParameters{}
-		param.Parse()
-		param = convertToJiraApiResourceParameters()
+		param = convertToJiraApiResourceParameters(param)
+		context = "ReadIssue"
+		issueList = "ABC-123 DEF-456"
 
 		// Act
 		param.InitializeAndValidatePostParse(&context, &issueList)
@@ -82,18 +81,78 @@ func TestPostParse(t *testing.T) {
 		assert.True(t, param.Meta.Ready(), "method Ready() returned false")
 	})
 
+	t.Run("app parameters NOT VALID NOR READY from INVALID inputs (MISSING URL)", func(t *testing.T) {
+		// Arrange
+		param = convertToJiraApiResourceParameters(param)
+		*param.JiraAPIUrl = ""
+		context = "ReadIssue"
+		issueList = "ABC-123 DEF-456"
+
+		// Act
+		param.InitializeAndValidatePostParse(&context, &issueList)
+
+		// Assert
+		assert.False(t, param.Meta.AllMandatoryValuesPresent(), "method AllMandatoryValuesPresent() returned true")
+		assert.False(t, param.Meta.Ready(), "method Ready() returned true")
+	})
+
+	t.Run("app parameters NOT VALID NOR READY from INVALID inputs (MISSING USERNAME)", func(t *testing.T) {
+		// Arrange
+		param = convertToJiraApiResourceParameters(param)
+		*param.Username = ""
+		context = "ReadIssue"
+		issueList = "ABC-123 DEF-456"
+
+		// Act
+		param.InitializeAndValidatePostParse(&context, &issueList)
+
+		// Assert
+		assert.False(t, param.Meta.AllMandatoryValuesPresent(), "method AllMandatoryValuesPresent() returned true")
+		assert.False(t, param.Meta.Ready(), "method Ready() returned true")
+	})
+
+	t.Run("app parameters NOT VALID NOR READY from INVALID inputs (MISSING PASSWORD)", func(t *testing.T) {
+		// Arrange
+		param = convertToJiraApiResourceParameters(param)
+		*param.Password = ""
+		context = "ReadIssue"
+		issueList = "ABC-123 DEF-456"
+
+		// Act
+		param.InitializeAndValidatePostParse(&context, &issueList)
+
+		// Assert
+		assert.False(t, param.Meta.AllMandatoryValuesPresent(), "method AllMandatoryValuesPresent() returned true")
+		assert.False(t, param.Meta.Ready(), "method Ready() returned true")
+	})
+
+	t.Run("app parameters NOT VALID NOR READY from INVALID inputs (EMPTY ISSUES)", func(t *testing.T) {
+		// Arrange
+		param = convertToJiraApiResourceParameters(param)
+		param.IssueList = make([]string, 0)
+		context = "ReadIssue"
+		issueList = ""
+
+		// Act
+		param.InitializeAndValidatePostParse(&context, &issueList)
+
+		// Assert
+		assert.True(t, param.Meta.AllMandatoryValuesPresent(), "method AllMandatoryValuesPresent() returned false")
+		assert.False(t, param.Meta.Ready(), "method Ready() returned true")
+	})
+
 }
 
-func convertToJiraApiResourceParameters() configuration.JiraAPIResourceParameters {
-	param := configuration.JiraAPIResourceParameters{}
-	param.JiraAPIUrl = &tParam.JiraAPIUrl
-	param.Username = &tParam.Username
-	param.Password = &tParam.Password
-	param.Destination = &tParam.Destination
-	param.ClosedStatusName = &tParam.ClosedStatusName
-	param.TransitionName = &tParam.TransitionName
+func convertToJiraApiResourceParameters(param configuration.JiraAPIResourceParameters) configuration.JiraAPIResourceParameters {
+	*param.JiraAPIUrl = tParam.JiraAPIUrl
+	*param.Username = tParam.Username
+	*param.Password = tParam.Password
+	*param.Destination = tParam.Destination
+	*param.ClosedStatusName = tParam.ClosedStatusName
+	*param.TransitionName = tParam.TransitionName
+	*param.Destination = tParam.Destination
 
-	param.EditCustomFieldParam.CustomFieldName = &tParam.EditCustomFieldParam.CustomFieldName
+	*param.EditCustomFieldParam.CustomFieldName = tParam.EditCustomFieldParam.CustomFieldName
 
 	param.Flags.ForceOpen = fPtr
 
