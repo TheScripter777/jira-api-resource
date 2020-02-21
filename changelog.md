@@ -4,9 +4,11 @@ All notable changes to this project will be documented in this file.
 The format of this file is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] 
+## [Unreleased]
+### Added
+- Output to &3 and to file the json result in the 'in' asset 
 ### Changed
-- How the json is output via the 'jq' command in the out script
+- Refactored services method 'ExecuteAsLastStep' signature to take full parameters instead of just the context
 
 ## [1.3.5] - 2020-02-20
 ### Changed
