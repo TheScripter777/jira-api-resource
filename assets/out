@@ -45,6 +45,7 @@ fi
 
 pushd /tmp/build/put
 
+    echo "Executing jiraApiIssueResource (out) for $issues"
     jiraApiIssueResource \
         --url="$url" \
         --username="$username" \
@@ -59,7 +60,8 @@ pushd /tmp/build/put
         --loggingLevel="$loggingLevel" \
         $flags
 
-    jq -n "{\"version\": {\"ref\": \".\"}, \"metadata\": [{\"name\": \"issues(s)\", \"value\": \"$issues\"},{\"name\": \"context\", \"value\": \"$context\"}]}" >&3
+    # Print json
+    jq -n "{\"version\": {\"ref\": \"$issues\"}, \"metadata\": [{\"name\": \"issues(s)\", \"value\": \"$issues\"},{\"name\": \"context\", \"value\": \"$context\"}]}" >&3
 
 popd
 

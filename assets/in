@@ -30,12 +30,21 @@ flags=$(jq -r '.source.flags // ""' < ${payload})
 issuesList=$(jq -r '.params.issues // ""' < ${payload})
 issuesFileDirectory=$(jq -r '.params.issue_file_location // ""' < ${payload})
 
+# Reading version (if any)
+version=$(jq -r '.version.ref // ""' < ${payload})
+
 if [ ! -z "$issuesList" ]; then
   issues=$issuesList
 elif [ ! -z "$issuesFileDirectory" ]; then
   issues=$(<$1/${issuesFileDirectory}/*.txt)
 else
   issues=""
+fi
+
+# If issue is still empty, check the version in the request as it might be stored there if we are in the follow-up 'get'
+# step following a put
+if [ -z $issues ]; then
+  issues=$version
 fi
 
 # In the 'in' asset (so either in a 'get' step or the second part of a 'put' step)
@@ -47,17 +56,7 @@ fi
 pushd /tmp/build/get
     resourceDestination=$destination/jira-api-issue-resource.json
 
-    echo "echo'ing 'in' call to jira-api-issue-resource..."
-    echo "jiraApiIssueResource \
-        --url="$url" \
-        --username="$username" \
-        --password="$password" \
-        --destination="$resourceDestination" \
-        --context="$context" \
-        --issues="$issues" \
-        --loggingLevel="$loggingLevel" \
-        $flags"
-
+    echo "Executing jiraApiIssueResource (in) for $issues"
     jiraApiIssueResource \
         --url="$url" \
         --username="$username" \
