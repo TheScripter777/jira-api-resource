@@ -189,8 +189,8 @@ Edit the issue(s) specified in the step parameters. Depending on the context def
 parameters will be updated. For more specific see the [context usage](#Context-Usage) section.
 
 ## Contributing
-Anybody is welcome to contribute to this resource. You should checkout the develop `branch` and create your feature branch
-from there. Only pull-requests made to the `develop` branch will be looked at and eventually accepted. Once `develop` is
-stable and contains the desired feature a merge to `master` will be made and following that a release (tag, docker image).
+Anybody is welcome to contribute to this resource. You should checkout the `master` branch and create your feature branch
+from there. Only pull-requests made to the `master` branch will be looked at and eventually accepted. Once `master` is
+stable and contains the desired feature a release (tag, docker image) will be made.
 
 For any questions or inquiries you can send an email at: [turns.coffee.into.scripts@gmail.com](mailto:turns.coffee.into.scripts@gmail.com) 
