@@ -16,18 +16,21 @@ fi
 # $1 ==> version
 # $2 ==> increment type (MAJOR,MINOR,PATCH)
 
-# Increment version in README.me
+# Increment version in README.md and example pipeline
 echo "=================================================================="
-echo -e $GREEN"Incrementing $2 version in README.md"$NO_COLOR
+echo -e $GREEN"Incrementing $2 version in README.md and example pipeline (yml)"$NO_COLOR
 case $2 in 
     MAJOR)
         sed -r -i 's/(Version:\s)([0-9])\.([0-9])\.([0-9])/echo "\1$((\2+1)).0.0"/ge' README.md
+        sed -r -i 's/(.*tag:\s)([0-9])\.([0-9])\.([0-9])\s#\sjira-api-issue-resource/echo "\1$((\2+1)).0.0 # jira-api-issue-resource"/ge' example/pipeline.yml
         ;;
     MINOR)
         sed -r -i 's/(Version:\s)([0-9])\.([0-9])\.([0-9])/echo "\1\2.$((\3+1)).0"/ge' README.md
+        sed -r -i 's/(.*tag:\s)([0-9])\.([0-9])\.([0-9])\s#\sjira-api-issue-resource/echo "\1\2.$((\3+1)).0 # jira-api-issue-resource"/ge' example/pipeline.yml
         ;;
     PATCH)
         sed -r -i 's/(Version:\s)([0-9])\.([0-9])\.([0-9])/echo "\1\2.\3.$((\4+1))"/ge' README.md
+        sed -r -i 's/(.*tag:\s)([0-9])\.([0-9])\.([0-9])\s#\sjira-api-issue-resource/echo "\1\2.\3.$((\4+1)) # jira-api-issue-resource"/ge' example/pipeline.yml
         ;;
     *)
         echo "Invalid increment type (MAJOR,MINOR,PATCH)"

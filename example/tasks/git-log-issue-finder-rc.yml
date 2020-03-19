@@ -1,0 +1,24 @@
+---
+platform: linux
+image_resource:
+  type: docker-image
+  source:
+    repository: turnscoffeeintoscripts/git-log-issue-finder
+    tag: 1.4.0
+
+params:
+  TICKETS_FILTER: 'ABC,XYZ'
+  GIT_REPO_DIRECTORY: git-repo
+  ISSUES_DIRECTORY: git-repo-glif
+  ISSUES_FILE: issues.txt
+
+inputs:
+  - name: git-repo
+
+outputs:
+  - name: git-repo-glif
+
+run:
+  path: /bin/sh
+  args:
+    - example/tasks/git-log-issue-finder-rc.sh

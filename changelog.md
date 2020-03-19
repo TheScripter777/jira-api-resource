@@ -5,6 +5,11 @@ The format of this file is based on [Keep a Changelog](https://keepachangelog.co
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] 
+### Added
+- Example pipeline with associated tasks to help people configuration this resource alongside glif.
+### Changed
+- Release script now also updates the tag of the resource in the example pipeline.
+- Remove trailing comma when preparing 'ref' value in responses
 
 ## [1.3.9] - 2020-02-25
 ### Changed

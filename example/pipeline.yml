@@ -1,0 +1,63 @@
+resource_types:
+  - name: jira-api-issue
+    type: docker-image
+    source:
+      repository: turnscoffeeintoscripts/jira-api-issue-resource
+      tag: 1.3.9 # jira-api-issue-resource
+
+resources:
+  - name: git-repo
+    type: git
+    webhook_token: {{git-webhook-token}}
+    source:
+      uri: {{git-uri-ssh}}
+      branch: {{git-branch}}
+      private_key: ((git-key))
+
+  - name: version
+    type: semver
+    source:
+      driver: git
+      uri: git@github.com:concourse/concourse.git
+      branch: version
+      file: version
+      private_key: {{concourse-repo-private-key}}
+
+  - name: jira-comment
+    type: jira-api-issue
+    source:
+      url: https://jira.com/rest/api/latest
+      username: ((jira-username))
+      password: ((jira-password))
+      context: AddComment
+      logging_level: "INFO"
+
+  - name: jira-build-number
+    type: jira-api-issue
+    source:
+      url: https://jira.com/rest/api/latest
+      username: ((jira-username))
+      password: ((jira-password))
+      context: EditCustomField
+      custom_field_name: "Build Number"
+      custom_field_type: "string"
+      flags: "--forceOnParent --keepGoing"
+      logging_level: "INFO"
+
+jobs:
+  - name: update-jira
+    serial: true
+    public: false
+    plan:
+      - get: git-repo
+      - get: version
+      - task: glif
+        file: example/tasks/git-log-issue-finder-rc.yml
+      - put: jira-comment
+        params:
+          issue_file_location: git-repo-glif
+          comment_body: "Deployment successful"
+      - put: jira-build-number
+        params:
+          issue_file_location: git-repo-glif
+          custom_field_value_from_file: version/version

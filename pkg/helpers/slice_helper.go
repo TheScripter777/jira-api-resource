@@ -1,5 +1,7 @@
 package helpers
 
+import "strings"
+
 func CleanStringSlice(slice []string) []string {
 	var r = make([]string, 0)
 	for _, str := range slice {
@@ -22,5 +24,6 @@ func SliceToCommaSeparatedString(slice []string) string {
 		result += ","
 	}
 
-	return result
+	// Remove trailing comma for clarity
+	return strings.TrimSuffix(result, ",")
 }

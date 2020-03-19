@@ -15,6 +15,8 @@ This [Concourse](https://concourse-ci.org/) resource allows a pipeline to interf
 It is intended to be as dynamic and generic as possible to allow a vast array of possible uses. In this regard it is important
 to know that jira-api-issue-resource benefits greatly from being used with [glif](https://github.com/TurnsCoffeeIntoScripts/git-log-issue-finder).
 
+**For a more complete example of a pipeline configured with both this resource and glif see the 'example' folder.**
+
 # Table of content
 1. [Resource Type Configuration](#Resource-Type-Configuration)
 2. [Source Configuration](#Source-Configuration) 
